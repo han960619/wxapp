@@ -1,0 +1,213 @@
+@import "../../minxin";
+@import "../../app";
+
+.order-list{
+  .title{
+    height: 98px;
+    position: relative;
+    margin-top: 24px;
+    &>view{
+      font-size: 28px;
+      line-height: 98px;
+      position: absolute;
+      height: 100%;
+      width: 120px;
+      text-align: center;
+      color: @c-999;
+      .transition();
+      transition-property: left, font-size, width;
+      &.active{
+        font-size: 45px;
+        width: 200px;
+        font-weight: bold;
+        left: ~"calc(50% - 100px)";
+      }
+    }
+    .normal{
+      top: 0;
+      left: ~"calc(50% - 240px)";
+    }
+    .useless{
+      top: 0;
+      left: ~"calc(50% + 120px)";
+    }
+  }
+
+  .content{
+    height: ~"calc(100vh - 138px)";
+    padding-top: 20px;
+    box-sizing: border-box;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    .transition(transform);
+    &-1{
+      transform: translate(-100%);
+      &.active{
+        transform: translate(0);
+      }
+    }
+    &-2{
+      transform: translate(100%);
+      &.active{
+        transform: translate(0);
+      }
+    }
+    .null{
+      padding-top: 240px;
+      height: ~"calc(100vh - 400px)";
+      .image-wrap{
+        width: 218px;
+        height: 240px;
+        margin: 0 auto;
+        position: relative;
+        padding-top: 38px;
+        image{
+          width: 100%;
+          height: 100%;
+          display: block;
+          margin: 0 auto;
+          position: absolute;
+          left: 0;
+          top: 0;
+        }
+        &>view{
+          width: 154px;
+          height: 30px;
+          box-sizing: border-box;
+          border: 8px solid #cccccc;
+          border-radius: 15px;
+          margin: 0 0 38px 30px;
+          &.short{
+            width: 98px;
+          }
+        }
+      }
+      View{
+        font-size: 34px;
+        text-align: center;
+        margin-top: 44px;
+        color: #cccccc;
+        font-weight: bold;
+      }
+    }
+    .order-li{
+      padding: 40px 30px 0;
+
+    }
+    .list{
+      padding-top: 20px;
+      min-height: 100%;
+      .order-item{
+        box-shadow: 0 0 20px #ddd;
+        margin: 0 30px 50px;
+        padding-bottom: 10px;
+        .wrap{
+          border-radius: 10px 10px 0 0;
+          position: relative;
+          padding: 34px 40px 10px;
+          background: #fff;
+        }
+        .order-title{
+          font-size: 30px;
+          display: flex;
+          justify-content: space-between;
+          .status{
+            font-weight: bold;
+          }
+          image{
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            position: relative;
+            top: 4px;
+            &.big{
+              width: 33px;
+              height: 33px;
+              top: 5px;
+            }
+          }
+        }
+        .order-type{
+          font-size: 28px;
+          display: flex;
+          justify-content: space-between;
+          margin: 40px 0 24px;
+          font-weight: 300;
+          align-items: center;
+          color: @c-666;
+          .name{
+            color: @c-666;
+            font-weight: bold;
+          }
+          .tag{
+            border: 1px solid @c-ccc;
+            padding: 0 10px;
+            border-radius: 20px;
+            font-size: 24px;
+            height: 40px;
+            line-height: 40px;
+            font-weight: bold;
+          }
+        }
+        .good{
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 36px;
+          //align-items: center;
+          &-info{
+            view:first-child{
+              font-size: 34px;
+              font-weight: bold;
+              color: @c-666;
+            }
+            view:last-child{
+              font-size: 26px;
+              color: @c-999;
+              margin-top: 20px;
+            }
+            .out{
+              font-weight: bold;
+              &.red{
+                color: #FF6666;
+              }
+            }
+            button{
+              width: 208px;
+              height: 80px;
+              line-height: 80px;
+              border-radius: 40px;
+              font-size: 32px;
+              font-weight: bold;
+              color: #fff;
+            }
+          }
+          &>text{
+            font-size: 36px;
+            color: @c-40;
+          }
+
+          .cancel{
+            font-size: 32px;
+            font-weight: bold;
+          }
+
+        }
+        .remark{
+          display: flex;
+          justify-content: space-between;
+        }
+        .order-price{
+          font-size: 48px;
+          .yen{
+            font-size: 30px;
+            color: @c-999;
+            position: relative;
+            top: -10px;
+            margin-right: 7px;
+          }
+        }
+      }
+    }
+  }
+}

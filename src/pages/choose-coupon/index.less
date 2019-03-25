@@ -1,0 +1,71 @@
+@import "../../minxin";
+
+.choose-coupon{
+  height: 100vh;
+  .main{
+    padding: 24px 0 120px;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  .unuse{
+    display: flex;
+    color: @c-40;
+    font-size: 36px;
+    font-weight: bold;
+  }
+
+  .un-select{
+    width: 50px;
+    height: 50px;
+    border: 1px solid @c-999;
+    border-radius: 50%;
+    margin: 0 24px;
+    box-sizing: border-box;
+  }
+
+  image{
+    width: 50px;
+    height: 50px;
+    margin: 0 24px;
+  }
+
+  &.coupon{
+    .item{
+      display: flex;
+      margin-top: 56px;
+      image, .un-select{
+        margin-top: 66px;
+      }
+      .entity{
+        height: 186px;
+        background: #cbcbcb;
+        .deno{
+          width: 222px;
+        }
+        .desc{
+          border-radius: 0 24px 24px 0;
+          .name{
+            margin-top: 12px;
+            .lines-clamp(1);
+          }
+        }
+      }
+    }
+  }
+  .null{
+    padding-top: 290px;
+    color: @c-ccc;
+    image{
+      width: 248px;
+      height: 248px;
+      display: block;
+      margin: 0 auto;
+    }
+    View{
+      font-size: 34px;
+      text-align: center;
+      margin-top: 44px;
+    }
+  }
+}

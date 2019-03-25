@@ -1,0 +1,95 @@
+
+@import "../../minxin";
+.mask{
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, .3);
+  z-index: 97;
+}
+.pick-time{
+  position: fixed;
+  width: 100%;
+  left: 0;
+  bottom: -100%;
+  visibility: hidden;
+  z-index: 97;
+  .transition();
+  &.active{
+    bottom: 0;
+    opacity: 1;
+    visibility: visible;
+  }
+  .title{
+    text-align: center;
+    font-size: 36px;
+    height: 96px;
+    line-height: 96px;
+    border-radius: 20px 20px 0 0;
+    background: #F5F5F5;
+    color: @c-40;
+    position: relative;
+    font-weight: bold;
+    .cacel{
+      font-size: 32px;
+      color: @c-999;
+      position: absolute;
+      left: 42px;
+      top: 0;
+    }
+  }
+  .picker{
+    height: 622px;
+    display: flex;
+    .day-list{
+      width: 240px;
+      background: #F5F5F5;
+      height: 100%;
+      .day-item{
+        height: 96px;
+        line-height: 96px;
+        text-align: center;
+        font-size: 32px;
+        color: @c-666;
+        font-weight: bold;
+        &.active{
+          background: #fff;
+          font-weight: bold;
+        }
+      }
+    }
+    .time-list{
+      flex: 1;
+      background: #fff;
+      height: 100%;
+      .time-item{
+        height: 96px;
+        line-height: 96px;
+        text-align: center;
+        color: @c-666;
+        display: flex;
+        font-weight: bold;
+        &>text{
+          font-size: 32px;
+        }
+        .time{
+          flex: 1;
+        }
+        .price{
+          font-size: 22px;
+          display: inline-block;
+          width: 150px;
+          text-align: right;
+          padding-right: 26px;
+          white-space: nowrap;
+        }
+        &.active{
+          font-weight: bold;
+          font-size: 36px;
+        }
+      }
+    }
+  }
+}

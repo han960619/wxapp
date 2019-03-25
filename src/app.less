@@ -1,0 +1,239 @@
+@import "./minxin";
+
+.clearfix:after{
+  content: '';
+  display: block;
+  clear: both;
+}
+
+page{
+  background: #f5f5f5;
+  overflow-y: auto;
+}
+
+button::after {
+  border: none;
+}
+
+cover-view{
+  white-space: normal;
+  pointer-events: unset;
+}
+.clear-cart-modal{
+  &.modal{
+    .title{
+      display: none;
+    }
+    .content{
+      text-align: center;
+      line-height: 160px;
+    }
+  }
+}
+.modal-wrap{
+  .order-again-modal{
+    &.modal{
+      .title{
+        display: none;
+      }
+      .content{
+        padding-top: 50px;
+        text-align: center;
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+.at-indexes__list-title{
+  padding: 20px 24px!important;
+  background-color: #fff!important;
+}
+.at-list__item::after, .at-list::after{
+  border: none!important;
+}
+
+.at-indexes__menu-item{
+  color: @c-666!important;
+}
+
+.tooth-border{
+  width: 100%;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  height: 0;
+  transform: translate(-50%, 100%);
+  border-bottom: 1px solid transparent;
+
+  &:before{
+    content: '';
+    display: block;
+    width: 100%;
+    height: 40px;
+    background-image: radial-gradient(transparent 0, transparent 13px, #fff 13px);
+    background-size: 40px 40px;
+    left: 0;
+    top: 0;
+    z-index: 19;
+  }
+  &:after{
+    content: '';
+    display: block;
+    width: 100%;
+    height: 22px;
+    background: #f5f5f5;
+    position: absolute;
+    top: 20px;
+    left: 0;
+    z-index: 20;
+  }
+}
+.bottom-shadow{
+  width: 100%;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  height: 5px;
+  transform: translate(-50%, 100%);
+  box-shadow: 0 20px 20px #ddd;
+}
+
+
+.coupon-modal{
+  .at-curtain__container{
+    width: auto;
+  }
+}
+
+@font-face {
+  font-family: xin-bold;
+  src: url('./assets/font/bold.ttf')
+}
+@font-face {
+  font-family: xin-normal;
+  src: url('./assets/font/normal.ttf')
+}
+
+.font-xin-bold{
+  font-family: xin-bold;
+}
+.font-xin-normal{
+  font-family: xin-normal;
+}
+
+/**
+*主题配色1
+*/
+.theme-bg-1{
+  background: #FF9933!important;
+}
+.theme-grad-bg-1{
+  background: linear-gradient(left, #FFA666, #FF8F1F)!important;
+}
+.theme-c-1{
+  color: #FF9933!important;
+}
+.theme-bd-1{
+  border-color: #FFB266!important;
+}
+.theme-grad-bg-filter-1{
+  background: linear-gradient(left, rgba(255, 166, 104, .9), rgba(255, 143, 31, .9))!important;
+}
+
+/**
+*主题配色2
+*/
+.theme-bg-2{
+  background: #7ACC52!important;
+}
+.theme-grad-bg-2{
+  background: linear-gradient(left, #B8F57A, #7ACC52)!important;
+}
+.theme-c-2{
+  color: #7ACC52!important;
+}
+.theme-bd-2{
+  border-color: #B8F57A!important;
+}
+.theme-grad-bg-filter-2{
+  background: linear-gradient(left, rgba(184, 245, 122, .9), rgba(122, 204, 82, .9))!important;
+}
+
+
+/**
+*主题配色3
+*/
+.theme-bg-3{
+  background: #FFAD1F!important;
+}
+.theme-grad-bg-3{
+  background: linear-gradient(left, #FFD39A, #FFAD1F)!important;
+}
+.theme-c-3{
+  color: #FFAD1F!important;
+}
+.theme-bd-3{
+  border-color: #FFD39A!important;
+}
+.theme-grad-bg-filter-3{
+  background: linear-gradient(left, rgba(255, 227, 154, .9), rgba(255, 174, 31, .9))!important;
+}
+
+/**
+*主题配色4
+*/
+.theme-bg-4{
+  background: #F90808!important;
+}
+.theme-grad-bg-4{
+  background: linear-gradient(left, #FFB49A, #F90808)!important;
+}
+.theme-c-4{
+  color: #F90808!important;
+}
+.theme-bd-4{
+  border-color: #FFB49A!important;
+}
+.theme-grad-bg-filter-4{
+  background: linear-gradient(left, rgba(255, 180, 154, .9), rgba(250, 8, 8, .9))!important;
+}
+
+/**
+*主题配色5
+*/
+.theme-bg-5{
+  background: #2787DB!important;
+}
+.theme-grad-bg-5{
+  background: linear-gradient(left, #5ADEFF, #2787DB)!important;
+}
+.theme-c-5{
+  color: #2787DB!important;
+}
+.theme-bd-5{
+  border-color: #5ADEFF!important;
+}
+.theme-grad-bg-filter-5{
+  background: linear-gradient(left, rgba(90, 222, 255, .9), rgba(39, 135, 220, .9))!important;
+}
+
+
+/**
+*主题配色6
+*/
+.theme-bg-6{
+  background: #FF4E63!important;
+}
+.theme-grad-bg-6{
+  background: linear-gradient(left, #FF8599, #FF4E63)!important;
+}
+.theme-c-6{
+  color: #FF4E63!important;
+}
+.theme-bd-6{
+  border-color: #FF8599!important;
+}
+.theme-grad-bg-filter-6{
+  background: linear-gradient(left, rgba(255, 133, 153, .9), rgba(255, 78, 99, .9))!important;
+}

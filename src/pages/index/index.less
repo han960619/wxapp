@@ -1,0 +1,196 @@
+@import "../../minxin";
+
+.index-page{
+  .icon-help-wrap{
+    text-align: right;
+    padding-right: 54px;
+    height: 60px;
+    line-height: 60px;
+    font-size: 24px;
+    .greed{
+      margin-right: 30px;
+      color: @c-666!important;
+    }
+    .at-icon{
+      position: relative;
+      top: -2px;
+    }
+  }
+  .banner{
+    height: 300px;
+    margin: 0 auto;
+    font-size: 81px;
+    text-align: center;
+    swiper{
+      height: 100%;
+      .swiper-item {
+        view {
+          height: 100%;
+          border-radius: 20px;
+          overflow: hidden;
+          padding: 5px 20px;
+          box-sizing: border-box;
+          .swiper-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            //box-shadow: 0 0 20px #ddd;
+          }
+        }
+      }
+    }
+  }
+  .banner-dot{
+    display: flex;
+    width: 130px;
+    justify-content: space-around;
+    margin: 20px auto 40px;
+    height: 20px;
+    text{
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      transition: width linear .3s;
+      background: @c-ccc;
+      &.active{
+        width: 50px;
+      }
+    }
+  }
+  .do-btn{
+    width: 690px;
+    height: 96px;
+    font-size: 36px;
+    margin: 0 auto;
+    border-radius: 48px;
+    color: #fff;
+    font-weight: bold;
+    //box-shadow: 0 40rpx 40rpx -30rpx #feb37d;
+  }
+  .icon-box{
+    display: flex;
+    height: ~"calc(100vh - 1000px)";
+    justify-content: space-between;
+    width: 690px;
+    margin: 36px auto;
+    border-radius: 20px;
+    overflow: hidden;
+    &.iphonex{
+      height: ~"calc(100vh - 1080px)";
+    }
+    &>view{
+      font-size: 32px;
+      text-align: center;
+      width: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      background: #fff;
+      &>view{
+        text-align: center;
+      }
+      image{
+        display: block;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 10px;
+      }
+      &.line{
+        width: 4px;
+        height: 100%;
+        padding: 18px 0;
+        box-sizing: border-box;
+        &>view{
+          background: #e6e6e6;
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+  .tips{
+    margin: 0 auto;
+    width: 710px;
+    height: 382px;
+    border-radius: 20px;
+    display: flex;
+    overflow: hidden;
+    .info{
+      flex: 1;
+      background: #fff;
+      padding: 24px 0 24px 26px;
+      .title{
+        font-size: 30px;
+        color: @c-666;
+      }
+      .count-box{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 12px 0 26px;
+        font-weight: bold;
+        .count{
+          font-size: 26px;
+          text{
+            font-size: 56px;
+          }
+        }
+        .do{
+          font-size: 38px;
+          height: 80px;
+          line-height: 80px;
+          margin-right: 46px;
+          color: #fff;
+          border-radius: 40px;
+        }
+      }
+      .star-box{
+        width: 280px;
+        display: flex;
+        flex-wrap: wrap;
+        height: 118px;
+        image{
+          width: 46px;
+          margin: 0 24px 10px 0;
+          &.big{
+            width: 62px;
+          }
+        }
+      }
+      .rule{
+        font-size: 30px;
+        padding-top: 20px;
+        color: @c-999;
+        .at-icon{
+          position: relative;
+          left: -12px;
+          top: -1px;
+        }
+      }
+    }
+    image{
+      width: 280px;
+      height: 100%;
+    }
+  }
+
+  .full-image{
+    width: 710px;
+    height: 382px;
+    margin: 0 auto;
+    display: block;
+    border-radius: 20px;
+  }
+
+  .rule-text{
+    font-size: 26px;
+    margin: 0 32px;
+    padding: 40px 0 10px;
+    color: @c-999;
+    view{
+      margin-bottom: 38px;
+    }
+  }
+}
+

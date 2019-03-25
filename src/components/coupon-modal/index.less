@@ -1,0 +1,115 @@
+@import "../../minxin";
+
+.mask{
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 9;
+}
+
+.coupon-modal-content{
+  width: 640px;
+  margin: 0 auto;
+  image{
+    width: 600px;
+    height: 240px;
+    margin: 0 auto;
+    display: block;
+  }
+  .list{
+    width: 600px;
+    min-height: 300px;
+    padding: 40px 18px 20px;
+    box-sizing: border-box;
+    margin: -1px auto 0;
+    background: #CB394C;
+    border-radius: 0 0 30px 30px;
+    .item{
+      width: 544px;
+      height: 180px;
+      margin: 0 auto 16px;
+      background: #fff;
+      border-radius: 24px;
+      display: flex;
+      .info{
+        width: 356px;
+        height: 100%;
+        box-sizing: border-box;
+        padding: 32px 42px 0;
+        .name{
+          font-size: 36px;
+          color: @c-40;
+          font-weight: bold;
+          .lines-clamp(1);
+          height: 50px;
+        }
+        .memo{
+          font-size: 26px;
+          color: @c-666;
+          margin-top: 24px;
+        }
+      }
+      .gap{
+        width: 20px;
+        position: relative;
+        height: 100%;
+        overflow: hidden;
+        .line{
+          width: 0;
+          height: 100%;
+          border-right: 2px dashed @c-999;
+          position: absolute;
+          left: 50%;
+          top: 0;
+          transform: translate(-50%);
+        }
+        .dot{
+          width: 20px;
+          height: 20px;
+          background: #CB394C;
+          border-radius: 50%;
+          position: absolute;
+          left: 50%;
+          top: 0;
+          transform: translate(-50%, -50%);
+          &-b{
+            top: unset;
+            bottom: 0;
+            transform: translate(-50%, 50%);
+          }
+        }
+      }
+      .right{
+        display: flex;
+        flex: 1;
+        .price{
+          width: 187px;
+          text-align: center;
+          line-height: 180px;
+          font-weight: bold;
+          color: #cf3e36;
+          text{
+            font-size: 32px;
+            font-weight: normal;
+          }
+          .num{
+            font-size: 52px;
+          }
+        }
+        .handle{
+          writing-mode: tb-rl;
+          font-size: 28px;
+          letter-spacing: 15px;
+          text-align: center;
+          width: 48px;
+          line-height: 48px;
+          color: #fff;
+          border-radius: 0 24px 24px 0;
+          padding: 0;
+        }
+      }
+    }
+  }
+}

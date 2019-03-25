@@ -1,0 +1,50 @@
+@import "../../minxin";
+
+.add-address {
+  padding: 24px 36px 0;
+  .content {
+    background: #fff;
+    border-radius: 20px;
+    font-size: 32px;
+    font-weight: bold;
+    .item {
+      display: flex;
+      color: @c-666;
+      padding: 36px 38px;
+      align-items: center;
+      .label {
+        width: 190px;
+      }
+      .input {
+        flex: 1;
+        color: @c-40;
+      }
+      .input-place{
+        color: @c-ccc;
+        font-weight: bold;
+      }
+      image {
+        width: 32px;
+        height: 28px;
+        transform: rotate(-90deg);
+      }
+    }
+  }
+  button {
+    margin-top: 40px;
+    height: 96px;
+    line-height: 96px;
+    font-size: 36px;
+    border-radius: 48px;
+    color: #fff;
+    &.disabled{
+      color: @c-999;
+      background: @c-ccc;
+    }
+  }
+
+  .delete-btn{
+    background: #fff;
+    box-shadow: 0 0 20px #ddd;
+  }
+}
