@@ -34,10 +34,8 @@ export default async (options = { method: 'GET', data: {} }) => {
   if (resp.error !== 1) {
     return loopFetch(resp)
   } else {
-    Taro.showToast({
-      title: '您当前网络似乎有些问题',
-      icon: 'none',
-      duration: 1500
+    Taro.redirectTo({
+      url: '/pages/error-page/index'
     })
     return {error: 1, timeout: 1}
   }

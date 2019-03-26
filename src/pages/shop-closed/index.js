@@ -8,6 +8,7 @@ import './index.less'
 class Closed extends Component {
   config = {
     navigationBarTitleText: '首页',
+    disableScroll: true
   }
 
   state = {
@@ -33,6 +34,7 @@ class Closed extends Component {
         </View>
         <View className="close-tip">店铺服务已打烊，请致电商家</View>
         <View className="close-action"  onClick={this.tellPhone}>联系商家</View>
+        <View className="close-company">小马飞腾提供技术支持</View>
       </View>
     )
   }
