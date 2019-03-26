@@ -1,7 +1,6 @@
 import Taro, {Component} from '@tarojs/taro'
 import {View, Text, Button} from '@tarojs/components'
 import {connect} from '@tarojs/redux'
-import classnames from 'classnames'
 import './index.less'
 
 
@@ -30,7 +29,7 @@ class Closed extends Component {
     return (
       <View className="close-container">
         <View className="close-cover">
-        <Image src='../../assets/images/closed.png' mode="widthFix"/>
+        <Image src={require('../../assets/images/closed.png')} mode="widthFix"/>
         </View>
         <View className="close-tip">店铺服务已打烊，请致电商家</View>
         <View className="close-action"  onClick={this.tellPhone}>联系商家</View>

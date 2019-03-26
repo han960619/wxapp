@@ -23,7 +23,7 @@ class ErrorPage extends Component {
     return (
       <View className="close-container">
         <View className="close-cover">
-        <Image src='../../assets/images/error.png' mode="widthFix"/>
+        <Image src={require('../../assets/images/error.png')}  mode="widthFix"/>
         </View>
         <View className="close-tip">网络已断开，网络信号弱或路由器故障，建议重新设置网络</View>
         <View className="close-action"  onClick={this.backIndex}>重新加载</View>
