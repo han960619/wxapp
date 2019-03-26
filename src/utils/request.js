@@ -18,7 +18,7 @@ export default async (options = { method: 'GET', data: {} }) => {
       data: {
         sessionId: sid || sessionId,
         idKey: idkey || idKey,
-        version: '0.1.30',
+        version: '1.0.30',
         ...constance_data,
         ...options.data,
       },
