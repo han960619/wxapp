@@ -75,7 +75,7 @@ class ShopIndex extends Component {
         store_id: +this.$router.params.id
       }
     }).then(({group}) => {
-      if(group === undefined) {
+      if(group == undefined) {
         return fasle
       }
       if (!group || group.length === 0) {
