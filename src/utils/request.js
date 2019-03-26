@@ -18,6 +18,7 @@ export default async (options = { method: 'GET', data: {} }) => {
       data: {
         sessionId: sid || sessionId,
         idKey: idkey || idKey,
+        version: '0.1.30',
         ...constance_data,
         ...options.data,
       },
@@ -76,12 +77,21 @@ export default async (options = { method: 'GET', data: {} }) => {
           let response = await request({sid: r.sessionId, idkey: r.idKey})
           return loopFetch(response)
         }
+      } else if(+data.code === 301) {
+        Taro.redirectTo({
+          url: `/pages/shop-closed/index?phone=${data.data.telephone}`
+        })
       } else {
-
+        Taro.redirectTo({
+          url: '/pages/error-page/index'
+        })
         return data
       }
 
-    } else {
+    }else {
+      Taro.redirectTo({
+        url: '/pages/error-page/index'
+      })
       console.log(`网络请求错误，状态码${statusCode}`);
       return {error: 1}
     }

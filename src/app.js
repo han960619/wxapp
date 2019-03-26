@@ -24,8 +24,9 @@ class App extends Component {
       'pages/add-address/index',
       'pages/choose-coupon/index',
       'pages/alias/index',
+      'pages/shop-closed/index',
+      'pages/error-page/index',
       'pages/auth-setting/index'
-
     ],
     permission: {
       'scope.userLocation': {
