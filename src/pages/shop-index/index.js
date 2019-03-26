@@ -75,6 +75,9 @@ class ShopIndex extends Component {
         store_id: +this.$router.params.id
       }
     }).then(({group}) => {
+      if(group == undefined) {
+        return fasle
+      }
       if (!group || group.length === 0) {
         Taro.showToast({
           title: '当前店铺尚未上架任何商品!',
