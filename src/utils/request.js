@@ -80,9 +80,6 @@ export default async (options = { method: 'GET', data: {} }) => {
           url: `/pages/shop-closed/index?phone=${data.data.telephone}`
         })
       } else {
-        Taro.redirectTo({
-          url: '/pages/error-page/index'
-        })
         return data
       }
 
