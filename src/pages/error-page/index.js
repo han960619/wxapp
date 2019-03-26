@@ -15,7 +15,9 @@ class ErrorPage extends Component {
 	}
 	
 	backIndex = () => {
-    Taro.navigateBack()
+    Taro.redirectTo({
+			url: '/pages/index/index'
+		})
 	}
 
 
