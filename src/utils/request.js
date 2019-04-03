@@ -18,7 +18,7 @@ export default async (options = { method: 'GET', data: {} }) => {
       data: {
         sessionId: sid || sessionId,
         idKey: idkey || idKey,
-        version: '1.0.30',
+        version: '1.0.31',
         ...constance_data,
         ...options.data,
       },
@@ -75,7 +75,7 @@ export default async (options = { method: 'GET', data: {} }) => {
           let response = await request({sid: r.sessionId, idkey: r.idKey})
           return loopFetch(response)
         }
-      } else if(+data.code === 301) {
+      } else if(+data.code === 302) {
         Taro.redirectTo({
           url: `/pages/shop-closed/index?phone=${data.data.telephone}`
         })
