@@ -3,7 +3,8 @@ import {getStoreList, getGoodsList, getGoodsNorm, getPresentGood} from '../servi
 export default {
   namespace: 'shop',
   state: {
-
+    mustList: [],
+    group:[]
   },
 
   effects: {
@@ -11,6 +12,17 @@ export default {
       return yield call(getStoreList, payload)
     },
     * getGoodsList({payload}, {put, call}) {
+      const res = yield call(getGoodsList, payload)
+      if(res.group && res.group[0] && res.group[0].gg_must == 1) {
+        yield put({
+					type: 'saveMustList',
+					payload: res.group[0].goods_list
+				});
+      }
+      yield put({
+        type: 'saveGroup',
+        payload: res.group
+      });
       return yield call(getGoodsList, payload)
     },
     * getGoodsNorm({payload}, {put, call}) {
@@ -22,6 +34,17 @@ export default {
   },
 
   reducers: {
-
+    saveMustList(state, action) {
+      return {
+        ...state,
+        mustList: action.payload,
+      };
+    },
+    saveGroup(state, action) {
+      return {
+        ...state,
+        group: action.payload,
+      };
+    }
   }
 }

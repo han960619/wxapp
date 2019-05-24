@@ -1,214 +1,11 @@
 @import "../../minxin";
 
-.shop-index{
-  background: #fff;
-  padding-top: 24px;
+.shop-search{
+  background: #fafafa;
+  min-height: 100vh;
+  position: relative;
   box-sizing: border-box;
   width: 100%;
-  .banner {
-    // height: 208px;
-    height: 160px;
-    margin-bottom: 20px;
-    position: relative;
-    swiper{
-      height: 100%;
-      .swiper-item {
-        view {
-          height: 100%;
-          margin: 0 12px;
-          overflow: hidden;
-          .swiper-img {
-            width: 100%;
-            height: 100%;
-            border-radius: 20px;
-          }
-        }
-      }
-    }
-    .shop-content {
-      padding: 0 30px;
-      display: flex;
-      .shop-img {
-        width: 160px;
-        height: 160px;
-        border-radius: 16px;
-        margin-right: 20px;
-      }
-      .shop-detail {
-        font-weight: bold;
-        .shop-name {
-          height:50px;
-          font-size:36px;
-          line-height:50px;
-          color:rgba(64,64,64,1);
-          margin-bottom: 10px;
-        }
-        .shop-address {
-          width:504px;
-          height:40px;
-          font-size:28px;
-          line-height:40px;
-          color:rgba(102,102,102,1);
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow:ellipsis;
-          margin-bottom: 20px;
-        }
-        .shop-apps {
-          display: flex;
-          height:40px;
-          font-size:28px;
-          font-weight:bold;
-          line-height:40px;
-          color:rgba(153,153,153,1);
-          .app-img {
-            width: 32px;
-            height: 32px;
-            margin-right: 16px;
-          }
-          .app-item {
-            display: flex;
-            align-items: center;
-            &:first-child {
-              flex: 1;
-            }
-          }
-          .search-panel {
-            padding-left: 30px;
-          }
-        }
-      }
-    }
-  }
-  .menu{
-    height: ~"calc(100vh - 220px)";
-    padding-top: 20px;
-    display: flex;
-    position: relative;
-    .transition();
-    &.short{
-      height: ~"calc(100vh - 388px)";
-    }
-    .aside{
-      width: 160px;
-      margin-right: 20px;
-      height: 100%;
-      border-top-right-radius: 12px;
-      border-bottom-right-radius: 12px;
-      background: #E6E6E6;
-      overflow: hidden;
-      .item-wrap{
-        height: 100%;
-        position: relative;
-        z-index: 2;
-        border-top-right-radius: 12px;
-        border-bottom-right-radius: 12px;
-        overflow: hidden;
-        .item{
-          position: relative;
-          height: 128px;
-          display: flex;
-          align-items: center;
-          font-size: 28px;
-          padding: 0 16px 0 16px;
-          word-break: break-all;
-          background: #E6E6E6;
-          color: @c-999;
-          .must-icon {
-            position: absolute;
-            top: 0;
-            left: 0;
-            color: #fff;
-            font-size: 20px;
-            line-height: 30px;
-            width:56px;
-            height:30px;
-            text-align: center;
-            font-weight: bold;
-            background:rgba(25,200,176,1);
-            border-radius:0px 0px 10px 0px;
-          }
-          image{
-            width: 32px;
-            height: 32px;
-            margin-right: 8px;
-            position: relative;
-            top: 6px;
-          }
-          &.active{
-            background: #fff;
-            color: @c-40;
-            font-weight: bold;
-          }
-          &.pre-active{
-            border-bottom-right-radius: 12px;
-          }
-          &.af-active{
-            border-top-right-radius: 12px;
-          }
-        }
-      }
-      .bg-alias{
-        position: absolute;
-        z-index: -1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        background: #fff;
-        &>View{
-          width: 100%;
-          height: 128px;
-        }
-      }
-      .null-block{
-        height: 200px;
-        background: #fff;
-        &>View{
-          width: 100%;
-          height: 100%;
-          background: #E6E6E6;
-        }
-        &.radius{
-          view{
-            border-top-right-radius: 12px;
-          }
-        }
-      }
-    }
-    .content{
-      flex: 1;
-      height: 100%;
-      background: #fff;
-      .good-block{
-        &:last-child{
-          padding-bottom: 200px;
-        }
-        .title{
-          height: 80px;
-          &>view{
-            width: 100%;
-            height: 80px;
-            line-height: 80px;
-            font-size: 30px;
-            background: #fff;
-            image{
-              width: 32px;
-              height: 32px;
-              margin-right: 22px;
-              position: relative;
-              top: 5px;
-            }
-            &.top-show{
-              position: fixed;
-              top: 218px;
-              z-index: 9;
-            }
-          }
-        }
-      }
-    }
-  }
-
   .null-toast{
     .toast-body{
       width: 400px;
@@ -220,7 +17,71 @@
       }
     }
   }
+  .empty {
+    font-weight: bold;
+    text-align: center;
+    padding-top: 200rpx;
+    image {
+      display: inline-block;
+      width: 300rpx;
+      height: auto;
+    }
+    .empty-tip {
+      padding: 20rpx 70rpx 0 70rpx;
+      font-size: 29rpx;
+      color: #ccc;
+    }
+  }
+}
 
+.page-header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+  background: rgb(250,250,250);
+  display: flex;
+  align-items: center;
+  .cancel-panel {
+    padding: 0 40px;
+    font-size:32px;
+    font-weight:bold;
+    color:rgba(153,153,153,1);
+  }
+  .search-panel {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    height:78px;
+    line-height: 78px;
+    background:rgba(255,255,255,1);
+    box-shadow:0px 3px 12px rgba(0,0,0,0.1);
+    opacity:1;
+    border-radius:44px;
+    padding: 0 24px;
+    margin: 24px 0 24px 40px;
+    .search-icon {
+      margin-right: 20px;
+      font-weight:bold;
+      color: #999;
+    }
+    at-input, .at-input {
+      padding:0;
+      line-height: 74px;
+      box-sizing: border-box;
+      flex: 1;
+      height: 74px;
+      &__container {
+        padding-top: 13px;
+        line-height: 74px;
+      }
+    }
+    .at-icon-close-circle {
+      font-size: 40px !important;
+    }
+  }
 }
 
 .good-detail{
@@ -385,6 +246,7 @@
 }
 
 .good-list{
+  padding: 150px 40px 100px;
   .good{
     display: flex;
     margin-bottom: 48px;

@@ -52,9 +52,17 @@ class Index extends Component {
     }
   }
 
-  componentWillUnmount () { }
+  componentWillMount () {
+    const { id } = wx.getLaunchOptionsSync().query
+    id && setTimeout(() => {
+      Taro.navigateTo({
+        url: `/pages/shop-index/index?id=${id}`
+      })
+    }, 800)
+  }
 
   componentDidShow () {
+    const { localInfo } = this.props
     this.getIndexInfo();
 
     this.props.localInfo.error === 1 && this.props.localInfo.err.errCode == 0
