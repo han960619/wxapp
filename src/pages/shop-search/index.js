@@ -117,6 +117,13 @@ class ShopSearch extends Component {
       stanInfo: {}
     })
   }
+  
+  handleTop = () => {
+    Taro.setStorage({ key: 'scroll', data: true })
+    .then(() => {
+      Taro.navigateBack()
+    })
+  }
 
   selectTag = (key, index, i) => {
 
@@ -653,6 +660,7 @@ class ShopSearch extends Component {
           theme={theme} carts={carts} storeId={+this.$router.params.id}
           themeInfo={menu_cart}
           onPay={this.handlePay}
+          onTop={this.handleTop}
           onOpenCart={this.ToggleShowCart}
         />
 			</View>

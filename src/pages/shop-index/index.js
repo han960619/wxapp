@@ -69,6 +69,11 @@ class ShopIndex extends Component {
 
   componentDidShow() {
     this.getGoodsList()
+    const scroll = Taro.getStorageSync('scroll')
+    if(scroll) {
+      this.handleTop()
+      Taro.removeStorage({ key: 'scroll' })
+    }
   }
 
   getGoodsList = () => {
@@ -140,7 +145,7 @@ class ShopIndex extends Component {
   }
 
   changeClassify = (index, scrollGood = true) => {
-    if(this.state.curClassifyIndex == index) return
+    // if(this.state.curClassifyIndex == index) return
     const {group} = this.state
 
     const {wrapHeight, itemHeight} = this.asideHeiInfo
@@ -165,7 +170,24 @@ class ShopIndex extends Component {
       })
       this.curGroupGoodId = this.state.group[index].group_id
     }
+  }
 
+  goodScroll = e => {
+    const fix = e.detail.scrollHeight / (this.goodPosition[this.goodPosition.length - 1].bottom + 96)
+    if (e.detail.scrollTop + this.asideHeiInfo.wrapHeight > e.detail.scrollHeight) return
+    this.goodPosition.map(item => {
+      if (e.detail.scrollTop >= Math.floor(item.top * fix) && e.detail.scrollTop < Math.floor(item.bottom  * fix)) {
+        if (this.curGroupGoodId !== this.state.group[item.index].group_id) {
+          this.setState({
+            scrollCurGroupId: item.group_id,
+            curGroupGoodId: null
+          })
+        } else{
+          this.curGroupGoodId = null
+        }
+        this.changeClassify(item.index, false)
+      }
+    })
   }
 
   ToggleShowCart = () => {
@@ -361,21 +383,8 @@ class ShopIndex extends Component {
     this.asideScrollTop = e.detail.scrollTop
   }
 
-  goodScroll = e => {
-    const fix = e.detail.scrollHeight / (this.goodPosition[this.goodPosition.length - 1].bottom + 96)
-    if (e.detail.scrollTop + this.asideHeiInfo.wrapHeight > e.detail.scrollHeight) return
-    this.goodPosition.map(item => {
-      if (e.detail.scrollTop >= Math.floor(item.top * fix) && e.detail.scrollTop < (item.bottom) * fix) {
-        if (this.curGroupGoodId !== this.state.group[item.index].group_id) {
-          this.setState({
-            scrollCurGroupId: item.group_id,
-          })
-        } else{
-          this.curGroupGoodId = null
-        }
-        this.changeClassify(item.index, false)
-      }
-    })
+  handleTop = () => {
+    this.changeClassify(0, true)
   }
 
   handlePay = () => {
@@ -864,6 +873,7 @@ class ShopIndex extends Component {
           theme={theme} carts={carts} storeId={+this.$router.params.id}
           themeInfo={menu_cart}
           onPay={this.handlePay}
+          onTop={this.handleTop}
           onOpenCart={this.ToggleShowCart}
         />
 

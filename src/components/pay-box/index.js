@@ -50,6 +50,7 @@ class PayBox extends Component {
       this.props.onClick()
     } else {
       if(this.filterBtnText()) {
+        this.props.onTop()
         return
       }
       this.props.onPay()
