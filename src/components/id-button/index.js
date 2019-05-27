@@ -16,14 +16,14 @@ class IdButton extends Component {
   }
 
   render () {
-    const {onClick, disabled, className, noMust} = this.props
+    const {onClick, disabled, className, showMust} = this.props
 
     return (
       <Form onSubmit={this.handleSubmit} reportSubmit='true'>
         <Button
           onClick={onClick}
           disabled={disabled}
-          style={noMust ? {fontSize: '26rpx', background: '#999 !important'} : ''}
+          style={showMust ? {fontSize: '26rpx', background: '#999 !important'} : ''}
           formType='submit'
           className={className}
         >
