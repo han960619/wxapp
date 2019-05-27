@@ -408,6 +408,16 @@ class ShopIndex extends Component {
     })
   }
 
+  lookAddress = () => {
+    const { storeinfo } = this.state
+    Taro.openLocation({
+      latitude: +storeinfo.address_lat,
+      longitude: +storeinfo.address_lng,
+      name: storeinfo.s_title,
+      scale: 18
+    })
+  }
+
   render() {
     const {theme, menu_banner, menu_cart} = this.props
     const {id, fs_id} = this.$router.params
@@ -450,7 +460,7 @@ class ShopIndex extends Component {
               <View className='shop-name'>{storeinfo.s_title}</View>
               <View className='shop-address'>{storeinfo.s_address}</View>
               <View className='shop-apps'>
-                <View className='app-item'>
+                <View className='app-item' onClick={() => { this.lookAddress()}}>
                   <Image className='app-img' src={addressPng}/>
                   <View className='app-name'>距您{storeinfo.distance}</View>
                 </View>

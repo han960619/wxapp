@@ -58,7 +58,7 @@ class Index extends Component {
       Taro.navigateTo({
         url: `/pages/shop-index/index?id=${id}`
       })
-    }, 800)
+    }, 1000)
   }
 
   componentDidShow () {
