@@ -87,7 +87,10 @@ class ShopIndex extends Component {
       }
     }).then(({group, storeinfo}) => {
       if(group == undefined) {
-        return fasle
+        setTimeout(() => {
+          Taro.navigateBack()
+        }, 2500)
+        return false
       }
       if (!group || group.length === 0) {
         Taro.showToast({
