@@ -7,8 +7,7 @@
   width: 100%;
   .banner {
     // height: 208px;
-    height: 160px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     position: relative;
     swiper{
       height: 100%;
@@ -26,6 +25,7 @@
       }
     }
     .shop-content {
+      height: 160px;
       padding: 0 30px;
       display: flex;
       .shop-img {
@@ -79,15 +79,35 @@
         }
       }
     }
+    .full_discount {
+      display: flex;
+      height: 40px;
+      margin-top: 30px;
+      .discount-item {
+        height: 36px;
+        line-height: 36px;
+        text-align: center;
+        padding: 0 10px;
+        border:2px solid rgba(255,143,31,1);
+        border-radius: 10px;
+        color: #FF8F1F;
+        font-size: 24px;
+        margin-left: 30px;
+      }
+    }
+    
   }
   .menu{
-    height: ~"calc(100vh - 220px)";
+    height: ~"calc(100vh - 215px)";
     padding-top: 20px;
     display: flex;
     position: relative;
     .transition();
+    &.discount {
+      height: ~"calc(100vh - 285px)";
+    }
     &.short{
-      height: ~"calc(100vh - 388px)";
+      height: ~"calc(100vh - 383px)";
     }
     .aside{
       width: 160px;
@@ -200,8 +220,11 @@
             }
             &.top-show{
               position: fixed;
-              top: 218px;
+              top: 208px;
               z-index: 9;
+              &.discount {
+                top: 278px;
+              }
             }
           }
         }
@@ -409,9 +432,20 @@
       position: relative;
       .name{
         font-size: 30px;
-        height: 68px;
+        height: 82px;
         font-weight: bold;
         color: @c-40;
+      }
+      .takeaway {
+        height:34px;
+        margin-top: 6px;
+        line-height: 36px;
+        border:2px solid rgba(38,128,235,1);
+        border-radius:8px;
+        color: #2680EB;
+        font-size: 20px;
+        width: 80px;
+        text-align: center;
       }
       .pre-price{
         text-decoration: line-through;

@@ -5,11 +5,10 @@ export default {
   namespace: 'cart',
   state: {
     carts: {},
-    whatEver: 0
+    whatEver: 0,
   },
 
   effects: {
-
   },
 
   reducers: {

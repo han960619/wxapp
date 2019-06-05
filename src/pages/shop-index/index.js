@@ -16,7 +16,7 @@ import searchPng from '../../assets/images/shop-search.png'
 import addressPng from '../../assets/images/shop-address.png'
 
 
-@connect(({common, cart}) => ({...common, ...cart}))
+@connect(({common, cart, shop}) => ({...common, ...cart, ...shop}))
 class ShopIndex extends Component {
 
   config = {
@@ -422,7 +422,7 @@ class ShopIndex extends Component {
   }
 
   render() {
-    const {theme, menu_banner, menu_cart} = this.props
+    const {theme, menu_banner, menu_cart, fullDiscount} = this.props
     const {id, fs_id} = this.$router.params
     const carts = (this.props.carts[+id] || []).filter(item => !item.fs_id || item.fs_id === +fs_id)
 
@@ -475,11 +475,23 @@ class ShopIndex extends Component {
             </View>
           </View>
 
+          {
+            fullDiscount.length > 0 &&
+            <View className='full_discount'>
+              {
+                fullDiscount.map((item, index) => (
+                  <View className='discount-item' key={index}>
+                    {item.f}减{item.d}
+                  </View>
+                ))
+              }
+            </View>
+          }
         </View>
 
         {
           group && group.length &&
-          <View className='menu'>
+          <View className={`menu ${fullDiscount.length > 0 ? 'discount' : ''}`}>
             <View className='aside'>
               <ScrollView
                 scrollWithAnimation
@@ -527,7 +539,7 @@ class ShopIndex extends Component {
                 group.map((classify, index) => (
                   <View className='good-block' key={index} id={'id' + classify.group_id}>
                     <View className='title' id={'title-' + classify.group_id}>
-                      <View className={scrollCurGroupId === classify.group_id ? 'top-show' : ''}
+                      <View className={`${scrollCurGroupId === classify.group_id ? 'top-show' : ''} ${fullDiscount.length > 0 ? 'discount' : ''}`}
                         style={{zIndex: 20 + index}}
                       >
                         <Image src={classify.gg_image || ''}/>
@@ -550,6 +562,10 @@ class ShopIndex extends Component {
                               <View className='info'>
                                 <View className='name'>
                                   <Text onClick={this.showDetail.bind(this, good)}>{good.g_title}</Text>
+                                  {
+                                    good.g_takeaway == 2 &&
+                                    <View className='takeaway'>不外送</View>
+                                  }
                                 </View>
                                 <View
                                   className='pre-price' style={{visibility: +good.g_original_price !== 0 ? 'visible' : 'hidden'}}
