@@ -17,7 +17,16 @@
       padding-bottom: 60px;
     }
   }
-
+  .takeaway {
+    height:34px;
+    line-height: 36px;
+    border:2px solid rgba(38,128,235,1);
+    border-radius:8px;
+    color: #2680EB;
+    font-size: 20px;
+    width: 80px;
+    text-align: center;
+  }
   .content{
     box-sizing: border-box;
     position: relative;
@@ -216,10 +225,12 @@
           }
           .info{
             width: 280px;
+            height: 120px;
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             //align-items: stretch;
             .name{
+              flex: 1;
               font-size: 32px;
               font-weight: bold;
               color: @c-40;
@@ -235,7 +246,6 @@
               white-space: nowrap;
               font-size: 24px;
               color: @c-999;
-              max-height: 72px;
             }
           }
           .num{
@@ -305,6 +315,11 @@
             transform: translateY(6px);
             position: relative;
             top: -1px;
+            &.big {
+              width: 36px;
+              height: 36px;
+              transform: translateY(10px);
+            }
           }
           &-name{
             max-width: 300px;
@@ -313,6 +328,7 @@
           .handle{
             font-size: 28px;
             color: @c-999;
+            transform: translateY(1px);
             &.disabled{
               color: @c-ccc;
             }

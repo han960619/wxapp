@@ -650,6 +650,57 @@ class Order extends Component {
     this.setState({memoFocus: false})
   }
 
+  filterWarnText = () => {
+    let detailText = ''
+    let discount = 0
+    let { fullDiscount } = this.props
+    let { amount } = this.state
+    let total = amount
+    
+    for(let i = 0; i < fullDiscount.length; i++) {
+      if(total - fullDiscount[0].f < 0) {
+        break;
+      }else if(total - fullDiscount[fullDiscount.length - 1].f >= 0){
+        detailText = `满${fullDiscount[fullDiscount.length - 1].f}减${fullDiscount[fullDiscount.length - 1].d}`
+        discount = +fullDiscount[fullDiscount.length - 1].d
+        break;
+      }else if(total == fullDiscount[i].f) {
+        detailText = `满${fullDiscount[i].f}减${fullDiscount[i].d}`
+        discount = +fullDiscount[i].d
+        break;
+      }else if(total - fullDiscount[i].f < 0) {
+        detailText = `满${fullDiscount[i-1].f}减${fullDiscount[i-1].d}`
+        discount = +fullDiscount[i - 1].d
+        break;
+      }
+    }
+
+    return { discount, detailText }
+  }
+
+  filterShowWarn = () => {
+    let cartsWarn = true
+    let { fullDiscount } = this.props
+    let { goods } = this.state
+    goods.length > 0 && goods.map((item) => {
+      if(item.g_original_price > item.g_price || fullDiscount.length == 0 || item.fs_id) {
+        cartsWarn = false
+      }
+    })
+    return cartsWarn
+  }
+
+  filterTakeaway = () => {
+    let { goods } = this.state
+    let noTakeaway = false
+    goods.length > 0 && goods.map((item) => {
+      if(item.g_takeaway == 2) {
+        noTakeaway = true
+      }
+    })
+    return noTakeaway
+  }
+
   render() {
     const {theme, curCouponIndex} = this.props
     const {
@@ -665,11 +716,19 @@ class Order extends Component {
 
     const baseUrl = this.props.ext.domain
 
+    let noTakeaway = this.filterTakeaway()
+
     // const useAddress = selectedAddress || (userAddress.length > 0 ? userAddress.find(item => item.optional) : [])
     //
     // this.useAddress = useAddress
 
     let totalAmout = +amount
+
+    let { discount, detailText } = this.filterWarnText()
+    let cartsWarn = this.filterShowWarn()
+    if(!cartsWarn) {
+      discount = 0
+    }
 
     if (orderType === 3) {
       totalAmout += +store.s_take_money
@@ -678,6 +737,8 @@ class Order extends Component {
         totalAmout += +reserveTime[dayIndex].time[timeIndex].price
       }
     }
+
+    totalAmout -= discount
 
     if (orderType === 1 && takeType === 2) {
       totalAmout += +store.s_take_money
@@ -697,8 +758,6 @@ class Order extends Component {
 
     let finalAmount = totalAmout.toFixed(2)
 
-
-    const availableCoupons = couponList.filter(item => item.available)
     return (
       theme && orderType && goods && goods.length > 0 ?
       <View className='post-order'>
@@ -845,6 +904,10 @@ class Order extends Component {
                         <View className='info'>
                           <View className='name'>
                             {good.g_title}
+                            {
+                              good.g_takeaway == 2 && orderType == 3 &&
+                              <View className='takeaway'>不外送</View>
+                            }
                           </View>
                           <View className='standard'>
                             {
@@ -887,6 +950,10 @@ class Order extends Component {
                         <View className='info'>
                           <View className='name'>
                             {good.g_title}
+                            {
+                              good.g_takeaway == 2 && orderType == 3 &&
+                              <View className='takeaway'>不外送</View>
+                            }
                           </View>
                           <View className='standard'>
                             {
@@ -957,6 +1024,19 @@ class Order extends Component {
                   </View>
                 }
 
+                {
+                  cartsWarn && discount > 0 &&
+                  <View className='ticket'>
+                    <View className='ticket-name'>
+                      <Image className="big" src={`${baseUrl}/static/addons/diancan/img/style/style_${theme}_9.png`}/>
+                      <Text>{detailText}</Text>
+                    </View>
+                    <View className={`theme-c-${theme} handle`}>
+                      -<Text>&yen;</Text>{discount}
+                    </View>
+                  </View>
+                }
+
                 <View className='ticket' onClick={this.toChooseCouponPage}>
                   <View className='ticket-name'>
                     <Image src={`${baseUrl}/static/addons/diancan/img/style/style_${theme}_5.png`}/>
@@ -967,7 +1047,7 @@ class Order extends Component {
                       }
                     </Text>
                   </View>
-                  <View className={classnames('handle')}>
+                  <View className={`theme-c-${theme} handle`}>
                     {
                       (couponList.length === 0 || availableCoupons.length === 0) ? '暂无可用'
                         : curCouponIndex === -1 ? '请选择' :
@@ -1012,23 +1092,30 @@ class Order extends Component {
           {
             (orderType !== 3 || isFullPrice) &&
             <Block>
-              <View className='price'>
-                <View className='discount'>
-                  已优惠￥
-                  {
-                    (couponList[curCouponIndex].effective_price || 0) >= noConponAmount ? noConponAmount :
-                      (couponList[curCouponIndex].effective_price || 0)
-                  }
-                </View>
-                <View className='total'>
-                  合计￥
-                  <Text className='font-xin-normal'>
-                    {finalAmount}
-                  </Text>
-                </View>
-              </View>
-              <IdButton className={'theme-grad-bg-' + theme} onClick={this.stepPay}>去支付</IdButton>
-
+              {
+                noTakeaway && orderType == 3 
+                ? <View className='price'>当前部分商品不支持外送，请重选</View>
+                : <View className='price'>  
+                    <View className='discount'>
+                      已优惠￥
+                      {
+                        ((couponList[curCouponIndex].effective_price || 0) + discount) >= noConponAmount ? noConponAmount :
+                          ((couponList[curCouponIndex].effective_price || 0) + discount )
+                      }
+                    </View>
+                    <View className='total'>
+                      合计￥
+                      <Text className='font-xin-normal'>
+                        {finalAmount}
+                      </Text>
+                    </View>
+                  </View>
+              }
+              {
+                noTakeaway && orderType == 3 
+                ? <IdButton className={'theme-grad-bg-' + theme} onClick={this.toBack}>去重选</IdButton>
+                : <IdButton className={'theme-grad-bg-' + theme} onClick={this.stepPay}>去支付</IdButton>
+              }
             </Block>
           }
           {

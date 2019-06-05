@@ -568,6 +568,13 @@ class OrderDetail extends Component {
                     <Text className={classnames('price', 'theme-c-' + theme)}><Text>-&yen; </Text>{data.o_coupon_amount}</Text>
                   </View>
                 }
+                {
+                  data.o_full_discount_price != '0.00' &&
+                  <View className={`other coupon ${data.o_coupon_name ? 'nb' : ''}`}>
+                    <Text>满减优惠</Text>
+                    <Text className={classnames('price', 'theme-c-' + theme)}><Text>-&yen; </Text>{data.o_full_discount_price}</Text>
+                  </View>
+                }
 
               </View>
 

@@ -95,10 +95,10 @@ class PayBox extends Component {
     }, 0)).toFixed(2)
     
     for(let i = 0; i < fullDiscount.length; i++) {
-      if(total < fullDiscount[0].f) {
+      if(total - fullDiscount[0].f < 0) {
         warnText = `满${fullDiscount[0].f}减${fullDiscount[0].d}，还差${fullDiscount[0].f - total}元`;
         break;
-      }else if(total >= fullDiscount[fullDiscount.length - 1].f){
+      }else if(total - fullDiscount[fullDiscount.length - 1].f >= 0){
         discount = fullDiscount[fullDiscount.length - 1].d
         warnText = `已减${fullDiscount[fullDiscount.length - 1].d}元`;
         break;
@@ -106,7 +106,7 @@ class PayBox extends Component {
         discount = fullDiscount[i].d
         warnText = `已减${fullDiscount[i].d}元，再凑${fullDiscount[i + 1].f - total}元减${fullDiscount[i+ 1].d}元`;
         break;
-      }else if(total < fullDiscount[i].f) {
+      }else if(total - fullDiscount[i].f < 0) {
         discount = fullDiscount[i - 1].d
         warnText = `已减${fullDiscount[i - 1].d}元，再凑${fullDiscount[i].f - total}元减${fullDiscount[i].d}元`;
         break;

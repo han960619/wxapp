@@ -23,12 +23,7 @@ export default {
       
       yield put({
         type: 'saveFullDiscount',
-        payload: [
-          { f: 6, d: 1 },
-          { f: 12, d: 4 },
-          { f: 125, d: 40 },
-        ]
-        // payload: res.full_discount
+        payload: res.full_discount
       });
       yield put({
         type: 'saveGroup',
