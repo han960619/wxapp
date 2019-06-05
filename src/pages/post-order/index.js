@@ -754,10 +754,8 @@ class Order extends Component {
       + (orderType === 3 && reserveTime.length > 0 ?
         (
           +reserveTime[dayIndex].time[timeIndex].price
-        ) : 0)).toFixed(2)
-
+        ) : 0)).toFixed(2) - 0
     let finalAmount = totalAmout.toFixed(2)
-
     return (
       theme && orderType && goods && goods.length > 0 ?
       <View className='post-order'>
@@ -1099,8 +1097,8 @@ class Order extends Component {
                     <View className='discount'>
                       已优惠￥
                       {
-                        ((couponList[curCouponIndex].effective_price || 0) + discount) >= noConponAmount ? noConponAmount :
-                          ((couponList[curCouponIndex].effective_price || 0) + discount )
+                        ((couponList[curCouponIndex].effective_price - 0 || 0) + discount) >= noConponAmount ? noConponAmount :
+                          ((couponList[curCouponIndex].effective_price - 0 || 0) + discount )
                       }
                     </View>
                     <View className='total'>
