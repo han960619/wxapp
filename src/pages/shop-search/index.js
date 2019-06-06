@@ -330,6 +330,10 @@ class ShopSearch extends Component {
 										<View className='info'>
 											<View className='name'>
 												<Text onClick={this.showDetail.bind(this, good)}>{good.g_title}</Text>
+                        {
+                          good.g_takeaway == 2 &&
+                          <View className='takeaway'>不外送</View>
+                        }
 											</View>
 											<View
 												className='pre-price' style={{visibility: +good.g_original_price !== 0 ? 'visible' : 'hidden'}}

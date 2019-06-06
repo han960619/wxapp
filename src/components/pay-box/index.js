@@ -96,7 +96,7 @@ class PayBox extends Component {
     
     for(let i = 0; i < fullDiscount.length; i++) {
       if(total - fullDiscount[0].f < 0) {
-        warnText = `满${fullDiscount[0].f}减${fullDiscount[0].d}，还差${fullDiscount[0].f - total}元`;
+        warnText = `满${fullDiscount[0].f}减${fullDiscount[0].d}，还差${(fullDiscount[0].f - total).toFixed(2)}元`;
         break;
       }else if(total - fullDiscount[fullDiscount.length - 1].f >= 0){
         discount = fullDiscount[fullDiscount.length - 1].d
@@ -104,11 +104,11 @@ class PayBox extends Component {
         break;
       }else if(total == fullDiscount[i].f) {
         discount = fullDiscount[i].d
-        warnText = `已减${fullDiscount[i].d}元，再凑${fullDiscount[i + 1].f - total}元减${fullDiscount[i+ 1].d}元`;
+        warnText = `已减${fullDiscount[i].d}元，再凑${(fullDiscount[i + 1].f - total).toFixed(2)}元减${fullDiscount[i+ 1].d}元`;
         break;
       }else if(total - fullDiscount[i].f < 0) {
         discount = fullDiscount[i - 1].d
-        warnText = `已减${fullDiscount[i - 1].d}元，再凑${fullDiscount[i].f - total}元减${fullDiscount[i].d}元`;
+        warnText = `已减${fullDiscount[i - 1].d}元，再凑${(fullDiscount[i].f - total).toFixed(2)}元减${fullDiscount[i].d}元`;
         break;
       }
     }
@@ -168,7 +168,7 @@ class PayBox extends Component {
               <Text>&yen;</Text>
               <Text className='font-xin-normal'>
                 {
-                  cartsWarn ? (price - discount) : price
+                  cartsWarn ? (price - discount).toFixed(2) : price
                 }
               </Text>
             </View>
