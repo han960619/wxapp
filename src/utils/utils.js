@@ -12,7 +12,7 @@ export const getTouchData = (endX, endY, startX, startY)=> {
 
 export const sortCartGood = (curCart, good, num) => {
   if (!good.propertyTagIndex || good.propertyTagIndex.length === 0) {
-    let index = curCart.findIndex(item => !item.fs_id && (item.g_id === good.g_id))
+    let index = curCart.findIndex(item => !item.fs_id && (item.g_id === good.g_id) && (item.optionalstr === good.optionalstr))
 
     if (index > -1) {
       !curCart[index].num && (curCart[index].num = 0)

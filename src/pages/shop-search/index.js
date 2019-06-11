@@ -237,7 +237,7 @@ class ShopSearch extends Component {
   toStandardDetail = (good) => {
     this.setState({isShowDetail: false})
     Taro.navigateTo({
-      url: `/pages/standard-detail/index?store_id=${this.$router.params.id}&id=${good.g_id}&name=${good.g_title}&g_price=${good.g_price}`
+      url: `/pages/standard-detail/index?store_id=${this.$router.params.id}&id=${good.g_id}&name=${good.g_title}&g_price=${good.g_price}&g_original_price=${good.g_original_price}`
     })
   }
 

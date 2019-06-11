@@ -110,7 +110,9 @@ class StandardDetail extends Component {
       total_price: this.optPrice + (+this.$router.params.g_price || 0),
       g_image,
       g_title: this.$router.params.name,
-      fs_id: +fs_id
+      fs_id: +fs_id,
+      g_price: this.$router.params.g_price,
+      g_original_price: this.$router.params.g_original_price
     }
     this.props.dispatch({
       type: 'cart/setComboCart',

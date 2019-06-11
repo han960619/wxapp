@@ -58,7 +58,7 @@ class PresentGood extends Component {
 
   toStandardDetail = (good) => {
     Taro.navigateTo({
-      url: `/pages/standard-detail/index?store_id=${this.$router.params.id}&id=${good.g_id}&name=${good.g_title}&fs_id=${this.state.fs_id}`
+      url: `/pages/standard-detail/index?store_id=${this.$router.params.id}&id=${good.g_id}&name=${good.g_title}&fs_id=${this.state.fs_id}&g_price=${good.g_price}&g_original_price=${good.g_original_price}`
     })
   }
 
@@ -189,7 +189,6 @@ class PresentGood extends Component {
       })
       return
     }
-
     const {fs_id} = this.state
     const gd = {
       ...good,
