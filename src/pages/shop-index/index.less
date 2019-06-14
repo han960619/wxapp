@@ -414,17 +414,29 @@
     .img-wrap{
       width: 180px;
       height: 180px;
-      border-radius: 20px;
+      border-radius: 16px;
       position: relative;
       margin-right: 22px;
       .tag{
         position: absolute;
         border-radius: 12px 0 12px 0;
       }
+      .highlight{
+        position: absolute;
+        bottom: 0;
+        width: 180px;
+        height: 36px;
+        line-height: 36px;
+        text-align: center;
+        font-size: 20px;
+        color: #fff;
+        opacity: 0.5;
+        border-radius:0px 0px 16px 16px;
+      }
       image{
         width: 100%;
         height: 100%;
-        border-radius: 20px;
+        border-radius: 16px;
       }
     }
     .info{
@@ -460,10 +472,18 @@
           font-size: 26px;
         }
       }
+      .red {
+        color:rgba(255,0,0,1);
+        font-size: 24px;
+        margin-top: 10px;
+      }
       .handle{
         position: absolute;
-        bottom: -8px;
+        bottom: -17px;
         right: 24px;
+        &.bottom {
+          bottom: 30px;
+        }
         button{
           height: 48px;
           line-height: 48px;
@@ -516,11 +536,9 @@
       &-left{
         width: 236px;
         font-size: 24px;
-        line-height: 1.2;
         color: @c-999;
         .name{
           font-size: 30px;
-          margin-bottom: 10px;
           color: @c-40;
           font-weight: bold;
           .lines-clamp(2);
@@ -532,13 +550,17 @@
       }
       &-center{
         font-size: 36px;
-        margin: 0 54px;
+        margin: 0 45px;
         flex: 1;
+        text-align: center;
         color: @c-999;
         .pre-price{
           font-size: 24px;
           margin-left: 20px;
           text-decoration: line-through;
+        }
+        .over {
+          font-size: 24px;
         }
       }
     }

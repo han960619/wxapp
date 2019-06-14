@@ -111,6 +111,7 @@ class StandardDetail extends Component {
       g_image,
       g_title: this.$router.params.name,
       fs_id: +fs_id,
+      g_limit_num: this.$router.params.g_limit_num,
       g_price: this.$router.params.g_price,
       g_original_price: this.$router.params.g_original_price
     }

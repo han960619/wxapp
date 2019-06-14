@@ -237,7 +237,7 @@ class ShopSearch extends Component {
   toStandardDetail = (good) => {
     this.setState({isShowDetail: false})
     Taro.navigateTo({
-      url: `/pages/standard-detail/index?store_id=${this.$router.params.id}&id=${good.g_id}&name=${good.g_title}&g_price=${good.g_price}&g_original_price=${good.g_original_price}`
+      url: `/pages/standard-detail/index?store_id=${this.$router.params.id}&id=${good.g_id}&name=${good.g_title}&g_price=${good.g_price}&g_original_price=${good.g_original_price}&g_limit_num=${good.g_limit_num}`
     })
   }
 
@@ -281,6 +281,7 @@ class ShopSearch extends Component {
 		const { theme, menu_cart } = this.props
     const {id, fs_id} = this.$router.params
     const carts = (this.props.carts[+id] || []).filter(item => !item.fs_id || item.fs_id === +fs_id)
+    let limitText = ['每单', '每天', '每人']
     const {
         filterList, isShowCart,
       isShowDetail, isShowOptions, curGood, curCart, stanInfo, propertyTagIndex,
@@ -324,7 +325,11 @@ class ShopSearch extends Component {
 											{
 												good.tag_name &&
 												<Text className={classnames('tag')} style={{background: good.tag_color}}>{good.tag_name}</Text>
-											}
+                      }
+                      {
+                        good.g_highlight &&
+                        <View className={`highlight theme-bg-${theme}`}>{good.g_highlight}</View>
+                      }
 											<Image src={good.g_image_100 || ''}/>
 										</View>
 										<View className='info'>
@@ -343,7 +348,7 @@ class ShopSearch extends Component {
 											<View className='price'><Text>&yen;</Text>
 												<Text className='font-xin-normal'>{good.g_price}</Text>
 											</View>
-											<View className='handle' onClick={this.stopPropagation}>
+											<View className={`handle ${good.g_limit != 0 ? 'bottom': ''}`} onClick={this.stopPropagation}>
 												{
 													good.g_combination === 1 &&
 													<Block>
@@ -431,20 +436,13 @@ class ShopSearch extends Component {
                       <Text className={'theme-c-' + theme}>&yen;
                         <Text className='font-xin-normal'>
                           {
-                            (+good.g_price
-                              + (
-                                good.optional ?
-                                  good.optional.reduce((total, item, i) => {
-                                    return total += +item.list[good.optionalTagIndex[i]].gn_price
-                                  }, 0)
-                                  : 0
-                              )).toFixed(2)
+                            good._total.toFixed(2)
                           }
                         </Text>
                       </Text>
                       {
                         good.g_original_price && (good.g_original_price - 0) !== 0 &&
-                        <Text className='pre-price'>&yen;{good.g_original_price}</Text>
+                        <Text className='pre-price'>&yen;{good.g_original_price * good.num}</Text>
                       }
                     </View>
 
@@ -490,8 +488,14 @@ class ShopSearch extends Component {
                     </View>
                     <View class='item-center'>
                       <Text className={'theme-c-' + theme}>&yen;
-                        {good.total_price ? good.total_price.toFixed(2) : '0.00'}
+                        {
+                          good._total.toFixed(2)
+                        }
                       </Text>
+                      {
+                        good.g_original_price && (good.g_original_price - 0) !== 0 &&
+                        <Text className='pre-price'>&yen;{good.g_original_price * good.num}</Text>
+                      }
                     </View>
 
                     <Numbox

@@ -81,17 +81,18 @@ class PayBox extends Component {
     let { carts, fullDiscount, totalPrice } = this.props
     let total = totalPrice ||
     (carts.reduce((total, good) => {
-      if (!good.optionalnumstr) {
-        let price = good.g_price * good.num
-        good.optional && (price +=
-          good.optional.reduce((t, item, i) => {
-            return t += +item.list[good.optionalTagIndex[i]].gn_price * good.num
-          }, 0))
-        good.num && (total += +price)
-      } else {
-        total += (good.total_price * good.num)
-      }
-      return total
+      // if (!good.optionalnumstr) {
+      //   let price = good.g_price * good.num
+      //   good.optional && (price +=
+      //     good.optional.reduce((t, item, i) => {
+      //       return t += +item.list[good.optionalTagIndex[i]].gn_price * good.num
+      //     }, 0))
+      //   good.num && (total += +price)
+      // } else {
+      //   total += (good.total_price * good.num)
+      // }
+      // return total
+      return total += good._total
     }, 0)).toFixed(2)
     
     for(let i = 0; i < fullDiscount.length; i++) {
@@ -135,17 +136,19 @@ class PayBox extends Component {
     let showMust = this.filterBtnText()
     let price = totalPrice ||
     (carts.reduce((total, good) => {
-      if (!good.optionalnumstr) {
-        let price = good.g_price * good.num
-        good.optional && (price +=
-          good.optional.reduce((t, item, i) => {
-            return t += +item.list[good.optionalTagIndex[i]].gn_price * good.num
-          }, 0))
-        good.num && (total += +price)
-      } else {
-        total += (good.total_price * good.num)
-      }
-      return total
+      // if (!good.optionalnumstr) {
+      //   let price = good.g_price * good.num
+        
+      //   good.optional && (price +=
+      //     good.optional.reduce((t, item, i) => {
+      //       return t += +item.list[good.optionalTagIndex[i]].gn_price * good.num
+      //     }, 0))
+      //   good.num && (total += +price)
+      // } else {
+      //   total += (good.total_price * good.num)
+      // }
+      // return total
+      return total += good._total
     }, 0)).toFixed(2)
     return (
       <View className={`pay-content ${(carts.length > 0 || active) ? 'active' : ''}`}>

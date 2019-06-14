@@ -224,7 +224,7 @@
             margin-right: 18px;
           }
           .info{
-            width: 280px;
+            width: 290px;
             height: 120px;
             display: flex;
             flex-direction: column;
@@ -235,9 +235,22 @@
               font-weight: bold;
               color: @c-40;
               width: 100%;
-              white-space: nowrap;
-              text-overflow: ellipsis;
-              overflow: hidden;
+              .desc {
+                display: inline-block;
+                max-width: 224px;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                position: relative;
+              }
+              .tag {
+                display: inline-block;
+                width: 33px;
+                height: 33px;
+                margin-left: 10px;
+                margin-top: -6px;
+                vertical-align: middle;
+              }
             }
             .standard{
               width: 100%;

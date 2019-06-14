@@ -186,11 +186,25 @@ class Order extends Component {
 
   }
 
+  filterGoods = goods => {
+    let a = JSON.parse(JSON.stringify(goods))
+    goods.forEach((good, index) => {
+      if(good.overNum > 0 && good.g_limit_num > 0) {
+        let overGood = { ...good, overNum: 0, num: good.overNum, g_original_price: '0.00', g_price: good.g_original_price, g_limit: 0 }
+        good.overNum = 0
+        good.num = good.g_limit_num
+        good.g_limit = true
+        goods.push(overGood)
+      }
+    })
+    return goods
+  }
+
   getPreOrderInfo = (take_type) => {
     const {localInfo} = this.props
 
-    const goods = this.state.goods.map(cart => {
-      let {g_id, num, send_goods, fs_id} = cart
+    let goods = this.filterGoods(JSON.parse(JSON.stringify(this.state.goods))).map(cart => {
+      let {g_id, num, send_goods, fs_id, g_limit = false} = cart
       let g_property = [], optional = []
 
       if (cart.optionalTagIndex) {
@@ -228,9 +242,10 @@ class Order extends Component {
 
       }
 
-      return {g_id, num, send_goods, g_property, optional, full_send_id: fs_id}
+      return {g_id, num, send_goods, g_property, optional, g_limit, full_send_id: fs_id}
     })
 
+    
     return this.props.dispatch({
       type: 'order/getPreOrderInfo',
       payload: {
@@ -756,8 +771,11 @@ class Order extends Component {
           +reserveTime[dayIndex].time[timeIndex].price
         ) : 0)).toFixed(2) - 0
     let finalAmount = totalAmout.toFixed(2)
+
+    let _goods = this.filterGoods(JSON.parse(JSON.stringify(goods)))
+    
     return (
-      theme && orderType && goods && goods.length > 0 ?
+      theme && orderType && _goods && _goods.length > 0 ?
       <View className='post-order'>
         <View className={classnames('wrap', isIphoneX ? 'iphonex' : '')}>
           <View className='content'>
@@ -894,14 +912,20 @@ class Order extends Component {
               <View className='title'>订单详情</View>
               <View className='block-content'>
                 {
-                  goods.length > 0 &&
-                  goods.map((good, index) => (
+                  _goods.length > 0 &&
+                  _goods.map((good, index) => (
                     !good.optionalnumstr ?
                       <View className='good' key={index}>
                         <Image className='pic' src={good.g_image_100 || good.g_image}/>
                         <View className='info'>
                           <View className='name'>
-                            {good.g_title}
+                            <View className='desc'>
+                              {good.g_title}
+                            </View>
+                            {
+                              good.g_original_price && good.g_original_price * 1 !== 0 &&
+                              <Image className="tag" src={`${baseUrl}/static/addons/diancan/img/style/style_${theme}_10.png`}/>
+                            }
                             {
                               good.g_takeaway == 2 && orderType == 3 &&
                               <View className='takeaway'>不外送</View>
@@ -947,7 +971,13 @@ class Order extends Component {
                         <Image className='pic' src={good.g_image_100 || good.g_image}/>
                         <View className='info'>
                           <View className='name'>
-                            {good.g_title}
+                            <View className='desc'>
+                              {good.g_title}
+                            </View>
+                            {
+                              good.g_original_price && good.g_original_price * 1 !== 0 &&
+                              <Image className="tag" src={`${baseUrl}/static/addons/diancan/img/style/style_${theme}_10.png`}/>
+                            }
                             {
                               good.g_takeaway == 2 && orderType == 3 &&
                               <View className='takeaway'>不外送</View>
@@ -1055,7 +1085,7 @@ class Order extends Component {
                   </View>
                 </View>
                 <View className='subtotal'>
-                  共<Text className={'theme-c-' + theme}>{goods.length}</Text> 个商品，小计
+                  共<Text className={'theme-c-' + theme}>{_goods.length}</Text> 个商品，小计
                   <Text className={classnames('price', 'theme-c-' + theme)}><Text>&yen;</Text>
                     <Text className='font-xin-normal num'>{finalAmount}</Text>
                   </Text>
