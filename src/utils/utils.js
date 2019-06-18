@@ -19,6 +19,7 @@ const getGoodOptional = (good)=> {
 
 
 export const sortCartGood = (curCart, good, num) => {
+  console.log(good, num)
 
   // _num 该商品在购物车中总共多少个
   let _num = curCart.filter(item => item.g_id === good.g_id).reduce((total, opt) => {
@@ -28,11 +29,12 @@ export const sortCartGood = (curCart, good, num) => {
   let goodOver = 0
 
   // 添加或减少该商品 改变购物车后  该商品的数量  >0超出  <=0未超出
-  let _over = _num + num - good.g_limit_num
+  let _over = _num + num - good.g_limit_num + (good.g_limit_buy || 0)
+  
   // 将超出添加操作
   if(_over > 0 && good.g_limit_num > 0 && num > 0) {
     Taro.showToast({
-      title: `该折扣商品限购${good.g_limit_num}份，超出则恢复原价`,
+      title: `该折扣商品已达折扣上限，超出则恢复原价`,
       icon: 'none'
     })
     goodOver = 1
@@ -42,11 +44,12 @@ export const sortCartGood = (curCart, good, num) => {
   if(_over >= 0 && num < 0 && good.g_limit_num > 0) {
     goodOver = -1
   }
+  console.log(_over)
 
   if (!good.propertyTagIndex || good.propertyTagIndex.length === 0) {
     // index 商品在购物车中的位置
     let index = curCart.findIndex(item => !item.fs_id && (item.g_id === good.g_id) && (item.optionalstr === good.optionalstr))
-
+    
     if (index > -1) {
       !curCart[index].num && (curCart[index].num = 0)
       curCart[index].num += num
@@ -54,8 +57,8 @@ export const sortCartGood = (curCart, good, num) => {
       // 限购操作
       curCart[index].overNum = curCart[index].overNum || 0
       if(goodOver != 0) {
-        curCart[index].overNum += goodOver
-        curCart[index]._total += goodOver * (+good.g_original_price)
+        curCart[index].overNum += num
+        curCart[index]._total += over * (+good.g_original_price) + (num - over) * (+good.g_price)
       }else {
         curCart[index]._total += num * (+good.g_price)
       }
@@ -63,15 +66,16 @@ export const sortCartGood = (curCart, good, num) => {
       good.again_id && (curCart[index].again_id = good.again_id)
       curCart[index].num === 0 && curCart.splice(index, 1)
     } else {
-      good._total = +good.g_price
+      good.overNum = num * goodOver < 0 ? 0 : num * goodOver
+      good._total = (goodOver > 0 ? +good.g_original_price : +good.g_price) * (num || 1)
       curCart.push({...good, num})
     }
   } else {
     curCart.map((item, index) => item.index = index)
     let idAlikes = curCart.filter(item => item.g_id === good.g_id)
     if (idAlikes.length === 0) {
-      good.overNum = 0
-      good._total = +good.g_price + getGoodOptional(good)
+      good.overNum = num * goodOver < 0 ? 0 : num * goodOver
+      good._total = (goodOver > 0 ? +good.g_original_price : +good.g_price) * (num || 1)
       curCart.push({...good, num})
     } else{
       let index = idAlikes.findIndex(item => !item.fs_id && (item.optionalstr === good.optionalstr))
@@ -85,7 +89,7 @@ export const sortCartGood = (curCart, good, num) => {
         if(goodOver == 0) {
           curCart[i]._total += num * (+good.g_price + getGoodOptional(good))
         }else if (goodOver == 1) {
-          curCart[i].overNum += 1
+          curCart[i].overNum += num
           curCart[i]._total += +good.g_original_price + getGoodOptional(good)
         }else if(goodOver == -1) {
           if(_over >= 0) {
@@ -106,13 +110,12 @@ export const sortCartGood = (curCart, good, num) => {
           }else if(_over < 0){
             curCart[i]._total -= +good.g_price + getGoodOptional(good)
           }
-          console.log(2)
           curCart[i].overNum = curCart[i].overNum < 1 ? 0 : curCart[i].overNum - 1
         }
         curCart[i].num === 0 && curCart.splice(i, 1)
         good.again_id && (curCart[i].again_id = good.again_id)
       } else {
-        good.overNum = goodOver
+        good.overNum = num * goodOver < 0 ? 0 : num * goodOver
         good._total = (goodOver > 0 ? +good.g_original_price : +good.g_price) + getGoodOptional(good)
         curCart.push({...good, num})
       }
@@ -120,7 +123,6 @@ export const sortCartGood = (curCart, good, num) => {
   }
 
   console.log(curCart)
-
 
   return curCart
 }

@@ -320,7 +320,7 @@ class ShopSearch extends Component {
 							filterList.length > 0 && filterList.map((good, i) => {
 								const cartGood = carts.find(item => !item.fs_id && (item.g_id === good.g_id))
 								return (
-									<View className='good' key={i}>
+									<View className={`good ${good.g_limit != 0 ? 'mb' : ''}`} key={i}>
 										<View className='img-wrap' onClick={this.showDetail.bind(this, good)}>
 											{
 												good.tag_name &&
@@ -328,7 +328,10 @@ class ShopSearch extends Component {
                       }
                       {
                         good.g_highlight &&
-                        <View className={`highlight theme-bg-${theme}`}>{good.g_highlight}</View>
+                        <View className={`highlight`}>
+                          <View className={`theme-bg-${theme} bg`}></View>
+                          <Text>{good.g_highlight}</Text>
+                        </View>
                       }
 											<Image src={good.g_image_100 || ''}/>
 										</View>
@@ -348,7 +351,7 @@ class ShopSearch extends Component {
 											<View className='price'><Text>&yen;</Text>
 												<Text className='font-xin-normal'>{good.g_price}</Text>
 											</View>
-											<View className={`handle ${good.g_limit != 0 ? 'bottom': ''}`} onClick={this.stopPropagation}>
+											<View className='handle' onClick={this.stopPropagation}>
 												{
 													good.g_combination === 1 &&
 													<Block>
@@ -375,8 +378,12 @@ class ShopSearch extends Component {
 													<IdButton onClick={this.toStandardDetail.bind(this, good)}
 																	className={'theme-bg-' + theme}
 													>选规格</IdButton>
-												}
+                        }
 											</View>
+                      {
+                        good.g_limit != 0 &&
+                        <Text className='red'>{limitText[good.g_limit - 1]}限购{good.g_limit_num}份</Text>
+                      }
 										</View>
 									</View>
 								)
@@ -433,16 +440,22 @@ class ShopSearch extends Component {
                       </View>
                     </View>
                     <View class='item-center'>
-                      <Text className={'theme-c-' + theme}>&yen;
-                        <Text className='font-xin-normal'>
-                          {
-                            good._total.toFixed(2)
-                          }
+                      <View>
+                        <Text className={'theme-c-' + theme}>&yen;
+                          <Text className='font-xin-normal'>
+                            {
+                              good._total.toFixed(2)
+                            }
+                          </Text>
                         </Text>
-                      </Text>
+                        {
+                          good.g_original_price && (good.g_original_price - 0) !== 0 &&
+                          <Text className='pre-price'>&yen;{good.g_original_price * good.num}</Text>
+                        }
+                      </View>
                       {
-                        good.g_original_price && (good.g_original_price - 0) !== 0 &&
-                        <Text className='pre-price'>&yen;{good.g_original_price * good.num}</Text>
+                        good.overNum > 0 && ((good.num - good.overNum) > 0) &&
+                        <View class="over">(包含特价商品{good.num - good.overNum}份)</View>
                       }
                     </View>
 

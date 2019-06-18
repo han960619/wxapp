@@ -251,6 +251,9 @@
   .good{
     display: flex;
     margin-bottom: 48px;
+    &.mb {
+      margin-bottom: 58px;
+    }
     .img-wrap{
       width: 180px;
       height: 180px;
@@ -265,13 +268,25 @@
         position: absolute;
         bottom: 0;
         width: 180px;
-        height: 36px;
-        line-height: 36px;
-        text-align: center;
-        font-size: 20px;
+        height: 40px;
+        line-height: 40px;
+        font-size: 22px;
         color: #fff;
-        opacity: 0.5;
-        border-radius:0px 0px 16px 16px;
+        .bg {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          opacity: 0.8;
+          border-radius:0px 0px 16px 16px;
+          z-index: 10;
+        }
+        text {
+          position: absolute;
+          width: 100%;
+          text-align: center;
+          opacity: 1;
+          z-index: 11;
+        }
       }
       image{
         width: 100%;
@@ -284,7 +299,7 @@
       position: relative;
       .name{
         font-size: 30px;
-        height: 82px;
+        height: 86px;
         font-weight: bold;
         color: @c-40;
       }
@@ -301,7 +316,7 @@
       }
       .pre-price{
         text-decoration: line-through;
-        font-size: 28px;
+        font-size: 26px;
         margin-top: 10px;
         color: @c-999;
       }
@@ -313,13 +328,14 @@
         }
       }
       .red {
+        position: absolute;
+        bottom: -30px;
         color:rgba(255,0,0,1);
         font-size: 24px;
-        margin-top: 10px;
       }
       .handle{
         position: absolute;
-        bottom: -17px;
+        bottom: -16px;
         right: 24px;
         &.bottom {
           bottom: 30px;

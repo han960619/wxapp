@@ -44,8 +44,18 @@ export default {
       return yield call(requestCancelOrder, payload)
     },
     * requestOrderRepeat({payload}, {put, call}) {
-      const {change, goods} = yield call(requestOrderRepeat, payload)
+      let {change, goods} = yield call(requestOrderRepeat, payload)
       const {store_id, order_id} = payload
+
+      let warnText = '商品规格属性已变更'
+
+      goods.forEach((good, index) => {
+        if(good.g_limit > 1) {
+          change = true
+          goods = []
+          warnText = '订单包含特殊限购商品'
+        }
+      });
 
       yield put({
         type: 'repeatOrderAddCart',
@@ -53,15 +63,13 @@ export default {
       })
 
       if (change) {
-        return {change, payload: {store_id, order_id, goods}}
+        return {change, warnText, payload: {store_id, order_id, goods}}
       } else {
         Taro.navigateTo({
           url: '/pages/shop-index/index?id=' + store_id + '&showcart=1'
         })
-        return {change}
+        return {change, warnText}
       }
-
-
     },
     * repeatOrderAddCart({payload}, {put}) {
       const {store_id, order_id, goods} = payload
@@ -114,6 +122,22 @@ export default {
         }
 
       })
+
+      console.log(cartGoods)
+      var b = []//记录数组a中的id 相同的下标
+      for(var i = 0; i < cartGoods.length;i++){
+          for(var j = cartGoods.length-1;j>i;j--){
+              if(cartGoods[i].good.g_id == cartGoods[j].good.g_id){
+                  cartGoods[i].num = cartGoods[i].num*1 + cartGoods[j].num*1
+                  cartGoods[i].good.od_num = (cartGoods[i].good.od_num*1 + cartGoods[j].good.od_num*1).toString()
+                  b.push(j)
+              }
+          }
+      }
+      for(var k = 0; k<b.length;k++){
+        cartGoods.splice(b[k],1)
+      }
+      console.log(cartGoods)
 
       yield put({
         type: 'cart/setAgainCart',

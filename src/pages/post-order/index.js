@@ -187,12 +187,11 @@ class Order extends Component {
   }
 
   filterGoods = goods => {
-    let a = JSON.parse(JSON.stringify(goods))
     goods.forEach((good, index) => {
       if(good.overNum > 0 && good.g_limit_num > 0) {
         let overGood = { ...good, overNum: 0, num: good.overNum, g_original_price: '0.00', g_price: good.g_original_price, g_limit: 0 }
         good.overNum = 0
-        good.num = good.g_limit_num
+        good.num = good.g_limit_num - (good.g_limit_buy || 0)
         good.g_limit = true
         goods.push(overGood)
       }
@@ -412,8 +411,9 @@ class Order extends Component {
     const {orderType, takeType, userPhoneNum, reserveTime, memo, couponList,
       dayIndex, timeIndex, selectedAddress} = this.state
 
-    const goods = this.state.goods.map(cart => {
-      let {g_id, num, send_goods, fs_id} = cart
+    
+    const goods = this.filterGoods(JSON.parse(JSON.stringify(this.state.goods))).map(cart => {
+      let {g_id, num, send_goods, fs_id, g_limit} = cart
       let g_property = [], optional = [], g_property_array = []
 
       if (cart.propertyTagIndex) {
@@ -463,7 +463,7 @@ class Order extends Component {
 
       }
 
-      return {g_id, num, send_goods, g_property, optional, full_send_id: fs_id, g_property_array}
+      return {g_id, num, send_goods, g_limit, g_property, optional, full_send_id: fs_id, g_property_array}
     })
 
     return this.props.dispatch({

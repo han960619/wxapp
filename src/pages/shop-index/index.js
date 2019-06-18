@@ -551,7 +551,7 @@ class ShopIndex extends Component {
                         classify.goods_list.map((good, i) => {
                           const cartGood = carts.find(item => !item.fs_id && (item.g_id === good.g_id))
                           return (
-                            <View className='good' key={i}>
+                            <View className={`good ${good.g_limit != 0 ? 'mb' : ''}`} key={i}>
                               <View className='img-wrap' onClick={this.showDetail.bind(this, good)}>
                                 {
                                   good.tag_name &&
@@ -559,7 +559,10 @@ class ShopIndex extends Component {
                                 }
                                 {
                                   good.g_highlight &&
-                                  <View className={`highlight theme-bg-${theme}`}>{good.g_highlight}</View>
+                                  <View className={`highlight`}>
+                                    <View className={`theme-bg-${theme} bg`}></View>
+                                    <Text>{good.g_highlight}</Text>
+                                  </View>
                                 }
                                 <Image src={good.g_image_100 || ''}/>
                               </View>
@@ -579,7 +582,7 @@ class ShopIndex extends Component {
                                 <View className='price'><Text>&yen;</Text>
                                   <Text className='font-xin-normal'>{good.g_price}</Text>
                                 </View>
-                                <View className={`handle ${good.g_limit != 0 ? 'bottom': ''}`} onClick={this.stopPropagation}>
+                                <View className='handle' onClick={this.stopPropagation}>
                                   {
                                     good.g_combination === 1 &&
                                     <Block>
@@ -688,8 +691,8 @@ class ShopIndex extends Component {
                         }
                       </View>
                       {
-                        good.overNum > 0 &&
-                        <View class="over">(包含特价商品{good.g_limit_num}份)</View>
+                        good.overNum > 0 && ((good.num - good.overNum) > 0) &&
+                        <View class="over">(包含特价商品{good.num - good.overNum}份)</View>
                       }
                     </View>
 

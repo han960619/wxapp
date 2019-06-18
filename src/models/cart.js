@@ -15,10 +15,10 @@ export default {
     setAgainCart(state, {payload}) {
       const {id, goods} = payload
       let curCart = state.carts[id]
-
       !curCart && (curCart = [])
       goods.map(good => {
-        if (!curCart.some(item => item.again_id === good.good.again_id)) {
+        if (!curCart.some(item => (item.again_id === good.good.again_id))) {
+          good.good.num = good.good.od_num
           curCart = sortCartGood(curCart, good.good, good.num)
         }
       })
@@ -104,15 +104,12 @@ export default {
         }, 0)
 
         let goodOver = 0
-
         // 添加或减少该商品 改变购物车后  该商品的数量  >0超出  <=0未超出
-        let _over = _num + num - good.g_limit_num
-        console.log(_over)
-        console.log(num)
+        let _over = _num + num - good.g_limit_num + (good.g_limit_buy || 0)
         // 将超出添加操作
         if(_over > 0 && good.g_limit_num > 0 && num > 0) {
           Taro.showToast({
-            title: `该折扣商品限购${good.g_limit_num}份，超出则恢复原价`,
+            title: `该折扣商品已达折扣上限，超出则恢复原价`,
             icon: 'none'
           })
           goodOver = 1
@@ -166,7 +163,7 @@ export default {
 
             curCart[i].num === 0 && curCart.splice(i, 1)
           } else {
-            good.overNum = goodOver
+            good.overNum = num * goodOver < 0 ? 0 : num * goodOver
             good._total = (goodOver > 0 ? +good.g_original_price : +good.g_price) + getGoodOptional(good)
             curCart.push({...good, num})
           }
