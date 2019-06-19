@@ -278,7 +278,6 @@ class OrderDetail extends Component {
           confirm && this.againOk()
         })
         this.setState({addCartPayload: payload})
-      }else {
       }
     })
 

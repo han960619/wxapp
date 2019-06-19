@@ -123,7 +123,6 @@ export default {
 
       })
 
-      console.log(cartGoods)
       var b = []//记录数组a中的id 相同的下标
       for(var i = 0; i < cartGoods.length;i++){
           for(var j = cartGoods.length-1;j>i;j--){
@@ -134,10 +133,10 @@ export default {
               }
           }
       }
+      
       for(var k = 0; k<b.length;k++){
-        cartGoods.splice(b[k],1)
+        delete cartGoods[b[k]]
       }
-      console.log(cartGoods)
 
       yield put({
         type: 'cart/setAgainCart',

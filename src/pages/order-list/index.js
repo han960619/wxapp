@@ -193,10 +193,10 @@ class OrderList extends Component {
         store_id,
         order_id: o_id
       }
-    }).then(({change, payload}) => {
+    }).then(({change, warnText, payload}) => {
       if (change) {
         Taro.showModal({
-          content: '商品规格属性已变更，是否重新选择？'
+          content: `${warnText}，是否重新选择？`
         }).then(({confirm}) => {
           confirm && this.againOk()
         })

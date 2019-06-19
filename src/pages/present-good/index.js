@@ -232,14 +232,30 @@ class PresentGood extends Component {
       }
     }
 
+    
 
-    const good = {
+    let good = {
       ...curGood,
       ...curCart,
       ...normInfo,
       g_price: 0,
       fs_id
     }
+
+
+    let _total = 0
+    if (!good.optionalnumstr) {
+      let price = good.g_price * good.num
+      good.optional && (price +=
+        good.optional.reduce((t, item, i) => {
+          return t += +item.list[good.optionalTagIndex[i]].gn_price * good.num
+        }, 0))
+      good.num && (_total += +price)
+    } else {
+      _total += (good.total_price * good.num)
+    }
+
+    good._total = _total || 0
 
     this.props.dispatch({
       type: 'cart/setCart',
@@ -260,7 +276,7 @@ class PresentGood extends Component {
     const {goods, curGood, isShowOptions, isShowDetail, stanInfo, curCart,
       propertyTagIndex, optionalTagIndex, isShowCart} = this.state
     const carts = (this.props.carts[(this.$router.params.id)] || []).filter(item => item.fs_id)
-
+    console.log(carts)
     return (
       goods.length > 0 ?
         <View className='present-good'>

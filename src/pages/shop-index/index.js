@@ -686,7 +686,7 @@ class ShopIndex extends Component {
                           </Text>
                         </Text>
                         {
-                          good.g_original_price && (good.g_original_price - 0) !== 0 &&
+                          good.g_original_price && (good.g_original_price - 0) !== 0 && good.overNum == 0 &&
                           <Text className='pre-price'>&yen;{good.g_original_price * good.num}</Text>
                         }
                       </View>
