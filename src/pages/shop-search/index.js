@@ -1,5 +1,5 @@
 import Taro, {Component} from '@tarojs/taro'
-import {View, Text, Image, Swiper, SwiperItem, ScrollView, Block} from '@tarojs/components'
+import {View, Text, Image, ScrollView, Block} from '@tarojs/components'
 import { AtIcon, AtInput } from 'taro-ui'
 import {connect} from '@tarojs/redux'
 import classnames from 'classnames'
@@ -14,7 +14,8 @@ import noListPng from '../../assets/images/noList.png'
 class ShopSearch extends Component {
 
   config = {
-    navigationBarTitleText: '商品搜索',
+    navigationBarTitleText: '',
+    
   }
 
   state = {
@@ -28,17 +29,42 @@ class ShopSearch extends Component {
 		optionalTagIndex: [],
 		stanInfo: {},
     isShowOptions: false,
-    keyword: ''
+    keyword: '',
+    search: true,
+    recommendIndex: 0
   }
 
   componentWillMount() {
-    const { group } = this.props
-    let goodsList = []
-    group.map((item) => {
-      goodsList = goodsList.concat(item.goods_list)
+    const { search, type, recommendIndex } = this.$router.params
+    const { storeRecommend } = this.props
+    let title = '', backgroundColor = '';
+    if(search) {
+      const { group } = this.props
+      title = '商品搜索'
+      backgroundColor = '#f5f5f5'
+      let goodsList = []
+      group.map((item) => {
+        goodsList = goodsList.concat(item.goods_list)
+      })
+      this.setState({
+        goodsList: [...goodsList],
+        search: true
+      })
+    }else {
+      title = '活动专题'
+      backgroundColor = '#fafafa'
+      this.setState({
+        search: false,
+        recommendIndex,
+        filterList: storeRecommend.goodsList[type - 1]
+      })
+    }
+    Taro.setNavigationBarTitle({
+      title
     })
-    this.setState({
-      goodsList: [...goodsList],
+    Taro.setNavigationBarColor({
+      frontColor: '#000000',
+      backgroundColor
     })
   }
 
@@ -61,7 +87,6 @@ class ShopSearch extends Component {
   showDetail = (good) => {
     const carts = this.props.carts[(+this.$router.params.id)] || []
     const curCart = JSON.parse(JSON.stringify(carts.find(item => item.g_id === good.g_id) || {}))
-
 
     this.setState({
       isShowDetail: true,
@@ -278,37 +303,46 @@ class ShopSearch extends Component {
 
 
   render() {
-		const { theme, menu_cart } = this.props
+		const { theme, menu_cart, storeRecommend } = this.props
     const {id, fs_id} = this.$router.params
     const carts = (this.props.carts[+id] || []).filter(item => !item.fs_id || item.fs_id === +fs_id)
     let limitText = ['每单', '每天', '每人']
     const {
         filterList, isShowCart,
       isShowDetail, isShowOptions, curGood, curCart, stanInfo, propertyTagIndex,
-      optionalTagIndex
+      optionalTagIndex, search, recommendIndex
     } = this.state
     return (
       <View className='shop-search'>
-				<View className='page-header'>
-					<View className='search-panel'>
-						<AtIcon value='search' className='search-icon' size='18'/>
-						<AtInput
-							focus
-							placeholder='搜索关键词'
-							name='keyword'
-							type='text'
-							placeholderStyle={'transform: translateY(2px)'}
-							clear
-							border={false}
-							value={keyword}
-							onChange={(e) => { this.handleChange(e) }}
-						/>
-					</View>
-					<View className='cancel-panel' onClick={() => { Taro.navigateBack() }}>取消</View>
-				</View>
+				{
+          search && 
+          <View className='page-header'>
+            <View className='search-panel'>
+              <AtIcon value='search' className='search-icon' size='18'/>
+              <AtInput
+                focus
+                placeholder='搜索关键词'
+                name='keyword'
+                type='text'
+                placeholderStyle={'transform: translateY(2px)'}
+                clear
+                border={false}
+                value={keyword}
+                onChange={(e) => { this.handleChange(e) }}
+              />
+            </View>
+            <View className='cancel-panel' onClick={() => { Taro.navigateBack() }}>取消</View>
+          </View>
+        }
+        {
+          !search && 
+          <View className='page-header'>
+            <Image className='header-img' mode="widthFix" src={storeRecommend.recommend.activity[recommendIndex].image}/>
+          </View>
+        }
 				{
 					filterList && 
-					<View className='good-list'>
+					<View className={`good-list ${!search ? 'pt' : ''}`}>
 						{
 							filterList.length == 0 &&
 							<View className='empty'>

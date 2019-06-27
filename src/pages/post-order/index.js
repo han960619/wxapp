@@ -106,12 +106,14 @@ class Order extends Component {
 
     let totalAmount = +amount
 
+    let _takeNum = this.reduceTakeNum() - 0
+    console.log(_takeNum)
     if (orderType === 1 && this.state.takeType === 2) {
-      totalAmount += +store.s_take_money
+      totalAmount += _takeNum
     }
 
     if (orderType === 3) {
-      totalAmount += +store.s_take_money
+      totalAmount += _takeNum
 
       if (reserveTime.length && reserveTime[this.state.dayIndex].time[this.state.timeIndex]) {
         totalAmount += +reserveTime[this.state.dayIndex].time[this.state.timeIndex].price
@@ -158,8 +160,8 @@ class Order extends Component {
 
     if (takeType === 2) {
       const {store, couponList} = this.state
-
-      if (+store.s_take_money > 0 && this.props.curCouponIndex === -1) {
+      let takeNum = this.reduceTakeNum() - 0
+      if (takeNum > 0 && this.props.curCouponIndex === -1) {
         this.props.dispatch({
           type: 'order/setCouponIndex',
           payload: {
@@ -716,9 +718,20 @@ class Order extends Component {
     return noTakeaway
   }
 
+  reduceTakeNum = () => {
+    const { goods, store } = this.state
+    if(store.s_take_type == 2) {
+      return goods.reduce((total, good) => {
+        return total += good.num * +(good.g_combination == 1 ? store.s_take_general_money : store.s_take_combination_money)
+      }, 0)
+    }else {
+      return store.s_take_money
+    }
+  }
+
   render() {
     const {theme, curCouponIndex} = this.props
-    const {
+    let {
       orderType, isShowPicker, takeType, store, memo, s_take,
       couponList, userAddress, amount, reserveTime,
       isShowAddress, userPhoneNum, selectedAddress,
@@ -745,8 +758,10 @@ class Order extends Component {
       discount = 0
     }
 
+    console.log(store)
+    let takeNum = this.reduceTakeNum() - 0
     if (orderType === 3) {
-      totalAmout += +store.s_take_money
+      totalAmout += takeNum
 
       if (reserveTime.length) {
         totalAmout += +reserveTime[dayIndex].time[timeIndex].price
@@ -756,7 +771,7 @@ class Order extends Component {
     totalAmout -= discount
 
     if (orderType === 1 && takeType === 2) {
-      totalAmout += +store.s_take_money
+      totalAmout += takeNum
     }
     if (couponList[curCouponIndex] && couponList[curCouponIndex].effective_price) {
       totalAmout -= +couponList[curCouponIndex].effective_price
@@ -765,7 +780,7 @@ class Order extends Component {
     }
 
     let noConponAmount = (+amount +
-      (orderType === 1 && takeType === 1 ? 0 : +store.s_take_money)
+      (orderType === 1 && takeType === 1 ? 0 : takeNum)
       + (orderType === 3 && reserveTime.length > 0 ?
         (
           +reserveTime[dayIndex].time[timeIndex].price
@@ -1036,7 +1051,7 @@ class Order extends Component {
                   <View className='pack-fee'>
                     <Text>打包费</Text>
                     <View className='price'>
-                      <Text>&yen;</Text>{store.s_take_money}
+                      <Text>&yen;</Text>{this.reduceTakeNum()}
                     </View>
                   </View>
                 }

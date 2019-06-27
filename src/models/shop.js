@@ -5,7 +5,8 @@ export default {
   state: {
     mustList: [],
     group:[],
-    fullDiscount: []
+    fullDiscount: [],
+    storeRecommend: {}
   },
 
   effects: {
@@ -24,6 +25,10 @@ export default {
       yield put({
         type: 'saveFullDiscount',
         payload: res.full_discount
+      });
+      yield put({
+        type: 'saveStoreRecommend',
+        payload: res.storeRecommend
       });
       yield put({
         type: 'saveGroup',
@@ -56,6 +61,12 @@ export default {
       return {
         ...state,
         fullDiscount: action.payload,
+      };
+    },
+    saveStoreRecommend(state, action) {
+      return {
+        ...state,
+        storeRecommend: action.payload,
       };
     }
   }
