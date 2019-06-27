@@ -161,14 +161,14 @@ class Order extends Component {
     if (takeType === 2) {
       const {store, couponList} = this.state
       let takeNum = this.reduceTakeNum() - 0
-      if (takeNum > 0 && this.props.curCouponIndex === -1) {
-        this.props.dispatch({
-          type: 'order/setCouponIndex',
-          payload: {
-            curCouponIndex: couponList.findIndex(item => item.available)
-          }
-        })
-      }
+      // if (takeNum > 0 && this.props.curCouponIndex === -1) {
+      //   this.props.dispatch({
+      //     type: 'order/setCouponIndex',
+      //     payload: {
+      //       curCouponIndex: couponList.findIndex(item => item.available)
+      //     }
+      //   })
+      // }
     } else {
       if (+this.state.amount === 0) {
         this.props.dispatch({

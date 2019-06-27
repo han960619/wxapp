@@ -596,7 +596,10 @@ class ShopIndex extends Component {
                         classify.gg_must == 1 && <View className='must-icon'>必点</View>
                       }
                       <View>
-                        <Image src={classify.gg_image || ''}/>
+                        {
+                          classify.gg_image &&
+                          <Image src={classify.gg_image || ''}/>
+                        }
                         <Text>{classify.gg_name}</Text>
                       </View>
                     </View>
