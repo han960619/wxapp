@@ -539,7 +539,7 @@ class PresentGood extends Component {
                           </View>
                         </View>
                         <View class='item-center'>
-                          <Text className={'theme-c-' + theme}>&yen;
+                          <Text className={'theme-c-' + theme}><Text class="yen">&yen;</Text>
                             <Text className='font-xin-normal'>
                               {
                                 (+good.g_price
@@ -555,7 +555,7 @@ class PresentGood extends Component {
                           </Text>
                           {
                             good.g_original_price && good.g_original_price * 1 !== 0 &&
-                            <Text className='pre-price'>&yen;{good.g_original_price}</Text>
+                            <Text className='pre-price'><Text class="yen">&yen;</Text>{good.g_original_price}</Text>
                           }
                         </View>
 
@@ -623,6 +623,7 @@ class PresentGood extends Component {
             theme={theme} carts={carts} storeId={+this.$router.params.id}
             themeInfo={menu_cart}
             onOpenCart={this.ToggleShowCart}
+            isShowCart={isShowCart}
           />
 
           <Button className={classnames('more', 'theme-c-' + theme,)} onClick={this.toShopIndex}>选购更多</Button>

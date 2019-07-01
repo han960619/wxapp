@@ -717,6 +717,7 @@ class ShopSearch extends Component {
           onPay={this.handlePay}
           onTop={this.handleTop}
           onOpenCart={this.ToggleShowCart}
+          isShowCart={isShowCart}
         />
 			</View>
     )

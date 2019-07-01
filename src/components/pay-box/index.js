@@ -129,7 +129,7 @@ class PayBox extends Component {
   }
 
   render () {
-    let {theme, carts, onOpenCart, themeInfo, simple, totalPrice, btnText, active} = this.props
+    let {theme, carts, onOpenCart, themeInfo, simple, totalPrice, btnText, active, isShowCart} = this.props
     const {isAlert} = this.state
     let cartsWarn = this.filterShowWarn()
     let { warnText, discount } = this.filterWarnText()
@@ -168,7 +168,7 @@ class PayBox extends Component {
               </View>
             }
             <View className='price'>
-              <Text>&yen;</Text>
+              <Text className='yen' style={{ fontSize: '28rpx'}}>&yen;</Text>
               <Text className='font-xin-normal'>
                 {
                   cartsWarn ? (price - discount).toFixed(2) : price
@@ -178,7 +178,7 @@ class PayBox extends Component {
             {
               cartsWarn && discount != 0 &&
               <View className='pre-price'>
-                <Text>&yen;</Text>
+                <Text className='yen' style={{ fontSize: '21rpx'}}>&yen;</Text>
                 <Text className='font-xin-normal'>{price}</Text>
               </View>
             }
@@ -191,11 +191,14 @@ class PayBox extends Component {
             icon='shopping-bag-2' hasMask onClose={this.closeAlert}
           />
         </View>
-        {
-          <View className={classnames('box-warn', (cartsWarn && carts.length != 0) ? 'active' : '')}>
-            <View className='text-content'>{warnText}</View>
-          </View>
-        }
+        <View className="a">
+          {
+            !isShowCart &&
+            <View className={classnames('box-warn', (cartsWarn && carts.length != 0) ? 'active' : '')}>
+              <View className='text-content'>{warnText}</View>
+            </View>
+          }
+        </View>
       </View>
     )
   }

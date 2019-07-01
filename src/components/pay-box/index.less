@@ -1,21 +1,30 @@
 @import "../../app";
 @import "../../minxin";
 
-.pay-box{
-  width: 700px;
-  height: 96px;
-  display: flex;
+.pay-content {
+  .transition();
   position: fixed;
-  bottom: -156px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, .2);
   left: 50%;
   transform: translate(-50%);
-  z-index: 102;
-  border-radius: 48px;
-  .transition();
+  z-index: 103;
+  bottom: -1000px;
   &.active{
     bottom: 40px;
   }
+  .a {
+    position: relative;
+    top: 40px;
+    z-index: 30;
+  }
+}
+.pay-box{
+  position: relative;
+  z-index: 103;
+  width: 700px;
+  height: 96px;
+  display: flex;
+  box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+  border-radius: 48px;
   &.simple{
     position: static;
     transform: unset;
@@ -82,17 +91,15 @@
   height: 0px;
   border-radius:20px 20px 0px 0px;
   background: none;
-  position: fixed;
+  position: absolute;
   left: 50%;
   transform: translate(-50%);
-  z-index: -1;
   bottom: 90px;
   opacity: 0;
   transition: all 350ms;
   &.active{
     height: 109px;
     padding-top: 16px;
-    z-index: 100;
     background:rgba(255,244,191,1);
     opacity: 1;
     text-align: center;

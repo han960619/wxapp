@@ -498,9 +498,9 @@ class ShopIndex extends Component {
                         <View
                           className='pre-price' style={{visibility: +good.g_original_price !== 0 ? 'visible' : 'hidden'}}
                         >
-                          &yen;{good.g_original_price}
+                          <Text class="yen">&yen;</Text>{good.g_original_price}
                         </View>
-                        <View className='price'><Text>&yen;</Text>
+                        <View className='price'><Text class="yen">&yen;</Text>
                           <Text className='font-xin-normal'>{good.g_price}</Text>
                         </View>
                         <View className='handle' onClick={this.stopPropagation}>
@@ -658,9 +658,9 @@ class ShopIndex extends Component {
                                 <View
                                   className='pre-price' style={{visibility: +good.g_original_price !== 0 ? 'visible' : 'hidden'}}
                                 >
-                                  &yen;{good.g_original_price}
+                                  <Text class="yen">&yen;</Text>{good.g_original_price}
                                 </View>
-                                <View className='price'><Text>&yen;</Text>
+                                <View className='price'><Text class="yen">&yen;</Text>
                                   <Text className='font-xin-normal'>{good.g_price}</Text>
                                 </View>
                                 <View className='handle' onClick={this.stopPropagation}>
@@ -759,7 +759,7 @@ class ShopIndex extends Component {
                     </View>
                     <View class='item-center'>
                       <View>
-                        <Text className={'theme-c-' + theme}>&yen;
+                        <Text className={'theme-c-' + theme}><Text class="yen">&yen;</Text>
                           <Text className='font-xin-normal'>
                             {
                               good._total.toFixed(2)
@@ -768,7 +768,7 @@ class ShopIndex extends Component {
                         </Text>
                         {
                           good.g_original_price && (good.g_original_price - 0) !== 0 && good.overNum == 0 &&
-                          <Text className='pre-price'>&yen;{good.g_original_price * good.num}</Text>
+                          <Text className='pre-price'><Text class="yen">&yen;</Text>{good.g_original_price * good.num}</Text>
                         }
                       </View>
                       {
@@ -818,14 +818,14 @@ class ShopIndex extends Component {
                       </View>
                     </View>
                     <View class='item-center'>
-                      <Text className={'theme-c-' + theme}>&yen;
+                      <Text className={'theme-c-' + theme}><Text class="yen">&yen;</Text>
                         {
                           good._total.toFixed(2)
                         }
                       </Text>
                       {
                         good.g_original_price && (good.g_original_price - 0) !== 0 &&
-                        <Text className='pre-price'>&yen;{good.g_original_price * good.num}</Text>
+                        <Text className='pre-price'><Text class="yen">&yen;</Text>{good.g_original_price * good.num}</Text>
                       }
                     </View>
 
@@ -860,12 +860,12 @@ class ShopIndex extends Component {
                 <View className='desc'>{curGood.g_description}</View>
                 <View className='price-wrap'>
                   <View className={classnames('price', 'theme-c-' + theme)}>
-                    <Text>&yen;</Text>
+                  <Text class="yen" style={{ fontSize: '21rpx' }}>&yen;</Text>
                     <Text className='font-xin-normal'>{curGood.g_price}</Text>
                   </View>
                   {
                     curGood.g_original_price * 1 !== 0 &&
-                    <View className='pre-price'><Text>&yen;</Text>{curGood.g_original_price}</View>
+                    <View className='pre-price font-xin-normal'><Text class="yen" style={{ fontSize: '21rpx' }}>&yen;</Text>{curGood.g_original_price}</View>
                   }
                   {
                     curGood.g_has_norm === 2 &&
@@ -957,7 +957,7 @@ class ShopIndex extends Component {
             <View className='price-wrap'>
               <View className='price-box'>
                 <View className={classnames('price', 'theme-c-' + theme)}>
-                  <Text>&yen;</Text>
+                  <Text class="yen">&yen;</Text>
                   <Text className='font-xin-normal'>
                     {
                       (+curGood.g_price + (stanInfo.norm &&
@@ -971,7 +971,7 @@ class ShopIndex extends Component {
                 {
                   curGood.g_original_price * 1 !== 0 &&
                   <View className='pre-price'>
-                    <Text>&yen;</Text>
+                    <Text class="yen">&yen;</Text>
                     {curGood.g_original_price}
                   </View>
                 }
@@ -1001,6 +1001,7 @@ class ShopIndex extends Component {
           onPay={this.handlePay}
           onTop={this.handleTop}
           onOpenCart={this.ToggleShowCart}
+          isShowCart={isShowCart}
         />
 
         {/*<ConfirmModal
