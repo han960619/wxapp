@@ -15,8 +15,7 @@ import BackToHome from '../../components/back-to-home'
 import searchPng from '../../assets/images/shop-search.png'
 import addressPng from '../../assets/images/shop-address.png'
 
-
-@connect(({common, cart}) => ({...common, ...cart}))
+@connect(({common, cart, shop}) => ({...common, ...cart, ...shop}))
 class ShopIndex extends Component {
 
   config = {
@@ -40,6 +39,7 @@ class ShopIndex extends Component {
     propertyTagIndex: [],
     optionalTagIndex: [],
     scrollCurGroupId: '',
+    canScroll: false
   }
 
   componentWillMount() {
@@ -176,7 +176,7 @@ class ShopIndex extends Component {
   }
 
   goodScroll = e => {
-    const fix = e.detail.scrollHeight / (this.goodPosition[this.goodPosition.length - 1].bottom + 96)
+    const fix = e.detail.scrollHeight / (this.goodPosition[this.goodPosition.length - 1].bottom + 99)
     if (e.detail.scrollTop + this.asideHeiInfo.wrapHeight > e.detail.scrollHeight) return
     this.goodPosition.map(item => {
       if (e.detail.scrollTop >= Math.floor(item.top * fix) && e.detail.scrollTop < Math.floor(item.bottom  * fix)) {
@@ -374,7 +374,7 @@ class ShopIndex extends Component {
   toStandardDetail = (good) => {
     this.setState({isShowDetail: false})
     Taro.navigateTo({
-      url: `/pages/standard-detail/index?store_id=${this.$router.params.id}&id=${good.g_id}&name=${good.g_title}&g_price=${good.g_price}`
+      url: `/pages/standard-detail/index?store_id=${this.$router.params.id}&id=${good.g_id}&name=${good.g_title}&g_price=${good.g_price}&g_original_price=${good.g_original_price}&g_limit_num=${good.g_limit_num}`
     })
   }
 
@@ -407,7 +407,7 @@ class ShopIndex extends Component {
 
   linkToSearch = () => {
     Taro.navigateTo({
-      url: `/pages/shop-search/index?id=${this.$router.params.id}`
+      url: `/pages/shop-search/index?id=${this.$router.params.id}&search=true`
     })
   }
 
@@ -421,42 +421,33 @@ class ShopIndex extends Component {
     })
   }
 
+  checkRecommend = (item, index) => {
+    if(item.type == 5) {
+      return false
+    }
+    item.type == 4 && item.goods_id && this.showDetail(item.goodsInfo)
+    if(item.type < 4) {
+      Taro.navigateTo({
+        url: `/pages/shop-search/index?id=${this.$router.params.id}&type=${item.type}&recommendIndex=${index}`
+      })
+    }
+  }
+
   render() {
-    const {theme, menu_banner, menu_cart} = this.props
+    const {theme, menu_banner, menu_cart, fullDiscount, storeRecommend} = this.props
     const {id, fs_id} = this.$router.params
     const carts = (this.props.carts[+id] || []).filter(item => !item.fs_id || item.fs_id === +fs_id)
-
+    let limitText = ['每单', '每天', '每人']
     const {
       group, curClassifyIndex, isShowCart, isGoodNull,
       isShowDetail, isShowOptions, curGroupId, curGood, curCart,
-      curGroupGoodId, stanInfo, propertyTagIndex,
+      curGroupGoodId, stanInfo, propertyTagIndex, canScroll,
       optionalTagIndex, scrollCurGroupId, storeinfo
     } = this.state
     return (
       group ?
-      <View className='shop-index'>
+      <ScrollView scrollY className={`shop-index ${(storeRecommend.r_type > 0 ) ? 'hasAction' : ''}`}>
         <View className='banner'>
-          {/* <Swiper
-            indicatorColor='#999'
-            indicatorActiveColor='#f00'
-            previous-margin='12px'
-            next-margin='12px'
-            circular
-            autoplay={menu_banner.auto_play != 0}
-            interval={menu_banner.auto_play == 0 ? 5000 : menu_banner.auto_play * 1000}
-          >
-            {
-              menu_banner.banner.map((img, index) => (
-                <SwiperItem className='swiper-item' key={index}>
-                  <View>
-                    <Image className='swiper-img' src={img.image || ''}/>
-                  </View>
-                </SwiperItem>
-              ))
-            }
-
-          </Swiper> */}
-
           <View className='shop-content'>
             <Image className='shop-img' src={storeinfo.s_image || ''}/>
             <View className='shop-detail'>
@@ -474,12 +465,111 @@ class ShopIndex extends Component {
               </View>
             </View>
           </View>
-
+          {
+            fullDiscount.length > 0 &&
+            <View className='full_discount'>
+              {
+                fullDiscount.map((item, index) => (
+                  <View className={`discount-item theme-bd-${theme} theme-c-${theme}`} key={index}>
+                    {item.f}减{item.d}
+                  </View>
+                ))
+              }
+            </View>
+          }
         </View>
+        <View className={`recommend ${storeRecommend.r_type == 1 ? 'style1' : ''} ${storeRecommend.r_type == 2 > 0 ? 'style2' : ''}`}>
+          {
+            storeRecommend.r_type == 1 &&
+            <View className="style-group style1-group">
+              <View className='style-title'>推荐商品</View>
+              <ScrollView scrollWithAnimation scrollX={true} className='style1-goods'>
+                {
+                  storeRecommend.goodsList && storeRecommend.goodsList[0].map((good, index) => {
+                    const _cartGood = carts.find(item => !item.fs_id && (item.g_id === good.g_id))
+                    return (
+                      <View className='recommend-good' key={index}>
+                        <View className='good-img' onClick={this.showDetail.bind(this, good)}>
+                          <Image src={good.g_image_100 || ''}/>
+                        </View>
+                        <View className='name'> 
+                          <Text onClick={this.showDetail.bind(this, good)}>{good.g_title}</Text>
+                        </View>
+                        <View
+                          className='pre-price' style={{visibility: +good.g_original_price !== 0 ? 'visible' : 'hidden'}}
+                        >
+                          <Text class="yen">&yen;</Text>{good.g_original_price}
+                        </View>
+                        <View className='price'><Text class="yen">&yen;</Text>
+                          <Text className='font-xin-normal'>{good.g_price}</Text>
+                        </View>
+                        <View className='handle' onClick={this.stopPropagation}>
+                          {
+                            good.g_combination === 1 &&
+                            <Block>
+                              {
+                                good.g_has_norm === 2 &&
+                                <Numbox
+                                  num={_cartGood.num}
+                                  showNum={_cartGood && _cartGood.num !== 0}
+                                  onReduce={this.this.setCart.bind(this, good, -1, _cartGood)}
+                                  onAdd={this.setCart.bind(this, good, 1)}
+                                />
+                              }
+                              {
+                                good.g_has_norm === 1 &&
+                                <IdButton onClick={this.openOptions.bind(this, good)}
+                                        className={'theme-bg-' + theme}
+                                >选规格</IdButton>
+                              }
+                            </Block>
+                          }
 
+                          {
+                            good.g_combination === 2 &&
+                            <IdButton onClick={this.toStandardDetail.bind(this, good)}
+                                    className={'theme-bg-' + theme}
+                            >选规格</IdButton>
+                          }
+                        </View>   
+                        {
+                          good.g_limit != 0 &&
+                          <Text className='red'>{limitText[good.g_limit - 1]}限购{good.g_limit_num}份</Text>
+                        }
+                      </View>
+                    )
+                  })
+                }
+              </ScrollView>
+            </View>
+          }
+          {
+            storeRecommend.r_type == 2 && 
+            <View className="style-group style2-group">
+              <View className='style-title'>活动专题</View>
+              <Swiper
+                indicatorColor='#999'
+                indicatorActiveColor='#f00'
+                circular
+                autoplay={storeRecommend.recommend.activity && storeRecommend.recommend.activity.length > 1}
+                interval={3 * 1000}
+              >
+                {
+                  storeRecommend.recommend.activity && storeRecommend.recommend.activity.map((item, index) => (
+                    <SwiperItem className='swiper-item' onClick={() => {this.checkRecommend(item, index)}} key={index}>
+                      <View>
+                        <Image className='swiper-img' src={item.image || ''}/>
+                      </View>
+                    </SwiperItem>
+                  ))
+                }
+              </Swiper>
+            </View>
+          }
+        </View>
         {
           group && group.length &&
-          <View className='menu'>
+          <View className={`menu ${fullDiscount.length > 0 ? 'discount' : ''}`}>
             <View className='aside'>
               <ScrollView
                 scrollWithAnimation
@@ -506,7 +596,10 @@ class ShopIndex extends Component {
                         classify.gg_must == 1 && <View className='must-icon'>必点</View>
                       }
                       <View>
-                        <Image src={classify.gg_image || ''}/>
+                        {
+                          classify.gg_image &&
+                          <Image src={classify.gg_image || ''}/>
+                        }
                         <Text>{classify.gg_name}</Text>
                       </View>
                     </View>
@@ -527,7 +620,7 @@ class ShopIndex extends Component {
                 group.map((classify, index) => (
                   <View className='good-block' key={index} id={'id' + classify.group_id}>
                     <View className='title' id={'title-' + classify.group_id}>
-                      <View className={scrollCurGroupId === classify.group_id ? 'top-show' : ''}
+                        <View className={`${(scrollCurGroupId === classify.group_id && storeRecommend.r_type != 1 && storeRecommend.r_type != 2)? 'top-show' : ''} ${fullDiscount.length > 0 ? 'discount' : ''}`}
                         style={{zIndex: 20 + index}}
                       >
                         <Image src={classify.gg_image || ''}/>
@@ -539,24 +632,35 @@ class ShopIndex extends Component {
                         classify.goods_list.map((good, i) => {
                           const cartGood = carts.find(item => !item.fs_id && (item.g_id === good.g_id))
                           return (
-                            <View className='good' key={i}>
+                            <View className={`good ${good.g_limit != 0 ? 'mb' : ''}`} key={i}>
                               <View className='img-wrap' onClick={this.showDetail.bind(this, good)}>
                                 {
                                   good.tag_name &&
                                   <Text className={classnames('tag')} style={{background: good.tag_color}}>{good.tag_name}</Text>
                                 }
+                                {
+                                  good.g_highlight &&
+                                  <View className={`highlight`}>
+                                    <View className={`theme-bg-${theme} bg`}></View>
+                                    <Text>{good.g_highlight}</Text>
+                                  </View>
+                                }
                                 <Image src={good.g_image_100 || ''}/>
                               </View>
                               <View className='info'>
-                                <View className='name'>
+                                <View className='name'> 
                                   <Text onClick={this.showDetail.bind(this, good)}>{good.g_title}</Text>
+                                  {
+                                    good.g_takeaway == 2 &&
+                                    <View className='takeaway'>不外送</View>
+                                  }
                                 </View>
                                 <View
                                   className='pre-price' style={{visibility: +good.g_original_price !== 0 ? 'visible' : 'hidden'}}
                                 >
-                                  &yen;{good.g_original_price}
+                                  <Text class="yen">&yen;</Text>{good.g_original_price}
                                 </View>
-                                <View className='price'><Text>&yen;</Text>
+                                <View className='price'><Text class="yen">&yen;</Text>
                                   <Text className='font-xin-normal'>{good.g_price}</Text>
                                 </View>
                                 <View className='handle' onClick={this.stopPropagation}>
@@ -587,7 +691,11 @@ class ShopIndex extends Component {
                                             className={'theme-bg-' + theme}
                                     >选规格</IdButton>
                                   }
-                                </View>
+                                </View>   
+                                {
+                                  good.g_limit != 0 &&
+                                  <Text className='red'>{limitText[good.g_limit - 1]}限购{good.g_limit_num}份</Text>
+                                }
                               </View>
                             </View>
                           )
@@ -650,23 +758,22 @@ class ShopIndex extends Component {
                       </View>
                     </View>
                     <View class='item-center'>
-                      <Text className={'theme-c-' + theme}>&yen;
-                        <Text className='font-xin-normal'>
-                          {
-                            (+good.g_price
-                              + (
-                                good.optional ?
-                                  good.optional.reduce((total, item, i) => {
-                                    return total += +item.list[good.optionalTagIndex[i]].gn_price
-                                  }, 0)
-                                  : 0
-                              )).toFixed(2)
-                          }
+                      <View>
+                        <Text className={'theme-c-' + theme}><Text class="yen">&yen;</Text>
+                          <Text className='font-xin-normal'>
+                            {
+                              good._total.toFixed(2)
+                            }
+                          </Text>
                         </Text>
-                      </Text>
+                        {
+                          good.g_original_price && (good.g_original_price - 0) !== 0 && good.overNum == 0 &&
+                          <Text className='pre-price'><Text class="yen">&yen;</Text>{good.g_original_price * good.num}</Text>
+                        }
+                      </View>
                       {
-                        good.g_original_price && (good.g_original_price - 0) !== 0 &&
-                        <Text className='pre-price'>&yen;{good.g_original_price}</Text>
+                        good.overNum > 0 && ((good.num - good.overNum) > 0) &&
+                        <View class="over">(包含特价商品{good.num - good.overNum}份)</View>
                       }
                     </View>
 
@@ -711,9 +818,15 @@ class ShopIndex extends Component {
                       </View>
                     </View>
                     <View class='item-center'>
-                      <Text className={'theme-c-' + theme}>&yen;
-                        {good.total_price ? good.total_price.toFixed(2) : '0.00'}
+                      <Text className={'theme-c-' + theme}><Text class="yen">&yen;</Text>
+                        {
+                          good._total.toFixed(2)
+                        }
                       </Text>
+                      {
+                        good.g_original_price && (good.g_original_price - 0) !== 0 &&
+                        <Text className='pre-price'><Text class="yen">&yen;</Text>{good.g_original_price * good.num}</Text>
+                      }
                     </View>
 
                     <Numbox
@@ -747,12 +860,12 @@ class ShopIndex extends Component {
                 <View className='desc'>{curGood.g_description}</View>
                 <View className='price-wrap'>
                   <View className={classnames('price', 'theme-c-' + theme)}>
-                    <Text>&yen;</Text>
+                  <Text class="yen" style={{ fontSize: '21rpx' }}>&yen;</Text>
                     <Text className='font-xin-normal'>{curGood.g_price}</Text>
                   </View>
                   {
                     curGood.g_original_price * 1 !== 0 &&
-                    <View className='pre-price'><Text>&yen;</Text>{curGood.g_original_price}</View>
+                    <View className='pre-price font-xin-normal'><Text class="yen" style={{ fontSize: '21rpx' }}>&yen;</Text>{curGood.g_original_price}</View>
                   }
                   {
                     curGood.g_has_norm === 2 &&
@@ -844,7 +957,7 @@ class ShopIndex extends Component {
             <View className='price-wrap'>
               <View className='price-box'>
                 <View className={classnames('price', 'theme-c-' + theme)}>
-                  <Text>&yen;</Text>
+                  <Text class="yen">&yen;</Text>
                   <Text className='font-xin-normal'>
                     {
                       (+curGood.g_price + (stanInfo.norm &&
@@ -858,7 +971,7 @@ class ShopIndex extends Component {
                 {
                   curGood.g_original_price * 1 !== 0 &&
                   <View className='pre-price'>
-                    <Text>&yen;</Text>
+                    <Text class="yen">&yen;</Text>
                     {curGood.g_original_price}
                   </View>
                 }
@@ -888,6 +1001,7 @@ class ShopIndex extends Component {
           onPay={this.handlePay}
           onTop={this.handleTop}
           onOpenCart={this.ToggleShowCart}
+          isShowCart={isShowCart}
         />
 
         {/*<ConfirmModal
@@ -911,7 +1025,7 @@ class ShopIndex extends Component {
           <BackToHome />
         }
 
-      </View>
+      </ScrollView>
 
       :
       <Loading />

@@ -106,12 +106,14 @@ class Order extends Component {
 
     let totalAmount = +amount
 
+    let _takeNum = this.reduceTakeNum() - 0
+    console.log(_takeNum)
     if (orderType === 1 && this.state.takeType === 2) {
-      totalAmount += +store.s_take_money
+      totalAmount += _takeNum
     }
 
     if (orderType === 3) {
-      totalAmount += +store.s_take_money
+      totalAmount += _takeNum
 
       if (reserveTime.length && reserveTime[this.state.dayIndex].time[this.state.timeIndex]) {
         totalAmount += +reserveTime[this.state.dayIndex].time[this.state.timeIndex].price
@@ -158,15 +160,15 @@ class Order extends Component {
 
     if (takeType === 2) {
       const {store, couponList} = this.state
-
-      if (+store.s_take_money > 0 && this.props.curCouponIndex === -1) {
-        this.props.dispatch({
-          type: 'order/setCouponIndex',
-          payload: {
-            curCouponIndex: couponList.findIndex(item => item.available)
-          }
-        })
-      }
+      let takeNum = this.reduceTakeNum() - 0
+      // if (takeNum > 0 && this.props.curCouponIndex === -1) {
+      //   this.props.dispatch({
+      //     type: 'order/setCouponIndex',
+      //     payload: {
+      //       curCouponIndex: couponList.findIndex(item => item.available)
+      //     }
+      //   })
+      // }
     } else {
       if (+this.state.amount === 0) {
         this.props.dispatch({
@@ -186,11 +188,24 @@ class Order extends Component {
 
   }
 
+  filterGoods = goods => {
+    goods.forEach((good, index) => {
+      if(good.overNum > 0 && good.g_limit_num > 0) {
+        let overGood = { ...good, overNum: 0, num: good.overNum, g_original_price: '0.00', g_price: good.g_original_price, g_limit: 0 }
+        good.overNum = 0
+        good.num = good.g_limit_num - (good.g_limit_buy || 0)
+        good.g_limit = true
+        goods.push(overGood)
+      }
+    })
+    return goods
+  }
+
   getPreOrderInfo = (take_type) => {
     const {localInfo} = this.props
 
-    const goods = this.state.goods.map(cart => {
-      let {g_id, num, send_goods, fs_id} = cart
+    let goods = this.filterGoods(JSON.parse(JSON.stringify(this.state.goods))).map(cart => {
+      let {g_id, num, send_goods, fs_id, g_limit = false} = cart
       let g_property = [], optional = []
 
       if (cart.optionalTagIndex) {
@@ -228,9 +243,10 @@ class Order extends Component {
 
       }
 
-      return {g_id, num, send_goods, g_property, optional, full_send_id: fs_id}
+      return {g_id, num, send_goods, g_property, optional, g_limit, full_send_id: fs_id}
     })
 
+    
     return this.props.dispatch({
       type: 'order/getPreOrderInfo',
       payload: {
@@ -397,8 +413,9 @@ class Order extends Component {
     const {orderType, takeType, userPhoneNum, reserveTime, memo, couponList,
       dayIndex, timeIndex, selectedAddress} = this.state
 
-    const goods = this.state.goods.map(cart => {
-      let {g_id, num, send_goods, fs_id} = cart
+    
+    const goods = this.filterGoods(JSON.parse(JSON.stringify(this.state.goods))).map(cart => {
+      let {g_id, num, send_goods, fs_id, g_limit} = cart
       let g_property = [], optional = [], g_property_array = []
 
       if (cart.propertyTagIndex) {
@@ -448,7 +465,7 @@ class Order extends Component {
 
       }
 
-      return {g_id, num, send_goods, g_property, optional, full_send_id: fs_id, g_property_array}
+      return {g_id, num, send_goods, g_limit, g_property, optional, full_send_id: fs_id, g_property_array}
     })
 
     return this.props.dispatch({
@@ -650,9 +667,71 @@ class Order extends Component {
     this.setState({memoFocus: false})
   }
 
+  filterWarnText = () => {
+    let detailText = ''
+    let discount = 0
+    let { fullDiscount } = this.props
+    let { amount } = this.state
+    let total = amount
+    
+    for(let i = 0; i < fullDiscount.length; i++) {
+      if(total - fullDiscount[0].f < 0) {
+        break;
+      }else if(total - fullDiscount[fullDiscount.length - 1].f >= 0){
+        detailText = `满${fullDiscount[fullDiscount.length - 1].f}减${fullDiscount[fullDiscount.length - 1].d}`
+        discount = +fullDiscount[fullDiscount.length - 1].d
+        break;
+      }else if(total == fullDiscount[i].f) {
+        detailText = `满${fullDiscount[i].f}减${fullDiscount[i].d}`
+        discount = +fullDiscount[i].d
+        break;
+      }else if(total - fullDiscount[i].f < 0) {
+        detailText = `满${fullDiscount[i-1].f}减${fullDiscount[i-1].d}`
+        discount = +fullDiscount[i - 1].d
+        break;
+      }
+    }
+
+    return { discount, detailText }
+  }
+
+  filterShowWarn = () => {
+    let cartsWarn = true
+    let { fullDiscount } = this.props
+    let { goods } = this.state
+    goods.length > 0 && goods.map((item) => {
+      if(item.g_original_price > item.g_price || fullDiscount.length == 0 || item.fs_id) {
+        cartsWarn = false
+      }
+    })
+    return cartsWarn
+  }
+
+  filterTakeaway = () => {
+    let { goods } = this.state
+    let noTakeaway = false
+    goods.length > 0 && goods.map((item) => {
+      if(item.g_takeaway == 2) {
+        noTakeaway = true
+      }
+    })
+    return noTakeaway
+  }
+
+  reduceTakeNum = () => {
+    const { goods, store } = this.state
+    if(store.s_take_type == 2) {
+      return goods.reduce((total, good) => {
+        return total += good.num * +(good.g_combination == 1 ? store.s_take_general_money : store.s_take_combination_money)
+      }, 0)
+    }else {
+      return store.s_take_money
+    }
+  }
+
   render() {
     const {theme, curCouponIndex} = this.props
-    const {
+    let {
       orderType, isShowPicker, takeType, store, memo, s_take,
       couponList, userAddress, amount, reserveTime,
       isShowAddress, userPhoneNum, selectedAddress,
@@ -665,22 +744,34 @@ class Order extends Component {
 
     const baseUrl = this.props.ext.domain
 
+    let noTakeaway = this.filterTakeaway()
+
     // const useAddress = selectedAddress || (userAddress.length > 0 ? userAddress.find(item => item.optional) : [])
     //
     // this.useAddress = useAddress
 
     let totalAmout = +amount
 
+    let { discount, detailText } = this.filterWarnText()
+    let cartsWarn = this.filterShowWarn()
+    if(!cartsWarn) {
+      discount = 0
+    }
+
+    console.log(store)
+    let takeNum = this.reduceTakeNum() - 0
     if (orderType === 3) {
-      totalAmout += +store.s_take_money
+      totalAmout += takeNum
 
       if (reserveTime.length) {
         totalAmout += +reserveTime[dayIndex].time[timeIndex].price
       }
     }
 
+    totalAmout -= discount
+
     if (orderType === 1 && takeType === 2) {
-      totalAmout += +store.s_take_money
+      totalAmout += takeNum
     }
     if (couponList[curCouponIndex] && couponList[curCouponIndex].effective_price) {
       totalAmout -= +couponList[curCouponIndex].effective_price
@@ -689,18 +780,17 @@ class Order extends Component {
     }
 
     let noConponAmount = (+amount +
-      (orderType === 1 && takeType === 1 ? 0 : +store.s_take_money)
+      (orderType === 1 && takeType === 1 ? 0 : takeNum)
       + (orderType === 3 && reserveTime.length > 0 ?
         (
           +reserveTime[dayIndex].time[timeIndex].price
-        ) : 0)).toFixed(2)
-
+        ) : 0)).toFixed(2) - 0
     let finalAmount = totalAmout.toFixed(2)
 
-
-    const availableCoupons = couponList.filter(item => item.available)
+    let _goods = this.filterGoods(JSON.parse(JSON.stringify(goods)))
+    
     return (
-      theme && orderType && goods && goods.length > 0 ?
+      theme && orderType && _goods && _goods.length > 0 ?
       <View className='post-order'>
         <View className={classnames('wrap', isIphoneX ? 'iphonex' : '')}>
           <View className='content'>
@@ -837,14 +927,24 @@ class Order extends Component {
               <View className='title'>订单详情</View>
               <View className='block-content'>
                 {
-                  goods.length > 0 &&
-                  goods.map((good, index) => (
+                  _goods.length > 0 &&
+                  _goods.map((good, index) => (
                     !good.optionalnumstr ?
                       <View className='good' key={index}>
                         <Image className='pic' src={good.g_image_100 || good.g_image}/>
                         <View className='info'>
                           <View className='name'>
-                            {good.g_title}
+                            <View className='desc'>
+                              {good.g_title}
+                            </View>
+                            {
+                              good.g_original_price && good.g_original_price * 1 !== 0 &&
+                              <Image className="tag" src={`${baseUrl}/static/addons/diancan/img/style/style_${theme}_10.png`}/>
+                            }
+                            {
+                              good.g_takeaway == 2 && orderType == 3 &&
+                              <View className='takeaway'>不外送</View>
+                            }
                           </View>
                           <View className='standard'>
                             {
@@ -886,7 +986,17 @@ class Order extends Component {
                         <Image className='pic' src={good.g_image_100 || good.g_image}/>
                         <View className='info'>
                           <View className='name'>
-                            {good.g_title}
+                            <View className='desc'>
+                              {good.g_title}
+                            </View>
+                            {
+                              good.g_original_price && good.g_original_price * 1 !== 0 &&
+                              <Image className="tag" src={`${baseUrl}/static/addons/diancan/img/style/style_${theme}_10.png`}/>
+                            }
+                            {
+                              good.g_takeaway == 2 && orderType == 3 &&
+                              <View className='takeaway'>不外送</View>
+                            }
                           </View>
                           <View className='standard'>
                             {
@@ -941,7 +1051,7 @@ class Order extends Component {
                   <View className='pack-fee'>
                     <Text>打包费</Text>
                     <View className='price'>
-                      <Text>&yen;</Text>{store.s_take_money}
+                      <Text>&yen;</Text>{this.reduceTakeNum()}
                     </View>
                   </View>
                 }
@@ -957,6 +1067,19 @@ class Order extends Component {
                   </View>
                 }
 
+                {
+                  cartsWarn && discount > 0 &&
+                  <View className='ticket'>
+                    <View className='ticket-name'>
+                      <Image className="big" src={`${baseUrl}/static/addons/diancan/img/style/style_${theme}_9.png`}/>
+                      <Text>{detailText}</Text>
+                    </View>
+                    <View className={`theme-c-${theme} handle`}>
+                      -<Text>&yen;</Text>{discount}
+                    </View>
+                  </View>
+                }
+
                 <View className='ticket' onClick={this.toChooseCouponPage}>
                   <View className='ticket-name'>
                     <Image src={`${baseUrl}/static/addons/diancan/img/style/style_${theme}_5.png`}/>
@@ -967,7 +1090,7 @@ class Order extends Component {
                       }
                     </Text>
                   </View>
-                  <View className={classnames('handle')}>
+                  <View className={`theme-c-${theme} handle`}>
                     {
                       (couponList.length === 0 || availableCoupons.length === 0) ? '暂无可用'
                         : curCouponIndex === -1 ? '请选择' :
@@ -977,7 +1100,7 @@ class Order extends Component {
                   </View>
                 </View>
                 <View className='subtotal'>
-                  共<Text className={'theme-c-' + theme}>{goods.length}</Text> 个商品，小计
+                  共<Text className={'theme-c-' + theme}>{_goods.length}</Text> 个商品，小计
                   <Text className={classnames('price', 'theme-c-' + theme)}><Text>&yen;</Text>
                     <Text className='font-xin-normal num'>{finalAmount}</Text>
                   </Text>
@@ -1012,23 +1135,30 @@ class Order extends Component {
           {
             (orderType !== 3 || isFullPrice) &&
             <Block>
-              <View className='price'>
-                <View className='discount'>
-                  已优惠￥
-                  {
-                    (couponList[curCouponIndex].effective_price || 0) >= noConponAmount ? noConponAmount :
-                      (couponList[curCouponIndex].effective_price || 0)
-                  }
-                </View>
-                <View className='total'>
-                  合计￥
-                  <Text className='font-xin-normal'>
-                    {finalAmount}
-                  </Text>
-                </View>
-              </View>
-              <IdButton className={'theme-grad-bg-' + theme} onClick={this.stepPay}>去支付</IdButton>
-
+              {
+                noTakeaway && orderType == 3 
+                ? <View className='price'>当前部分商品不支持外送，请重选</View>
+                : <View className='price'>  
+                    <View className='discount'>
+                      已优惠￥
+                      {
+                        ((couponList[curCouponIndex].effective_price - 0 || 0) + discount) >= noConponAmount ? noConponAmount :
+                          ((couponList[curCouponIndex].effective_price - 0 || 0) + discount )
+                      }
+                    </View>
+                    <View className='total'>
+                      合计￥
+                      <Text className='font-xin-normal'>
+                        {finalAmount}
+                      </Text>
+                    </View>
+                  </View>
+              }
+              {
+                noTakeaway && orderType == 3 
+                ? <IdButton className={'theme-grad-bg-' + theme} onClick={this.toBack}>去重选</IdButton>
+                : <IdButton className={'theme-grad-bg-' + theme} onClick={this.stepPay}>去支付</IdButton>
+              }
             </Block>
           }
           {

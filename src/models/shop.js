@@ -4,7 +4,10 @@ export default {
   namespace: 'shop',
   state: {
     mustList: [],
-    group:[]
+    group:[],
+    fullDiscount: [],
+    storeRecommend: {},
+    s_business: 1
   },
 
   effects: {
@@ -19,6 +22,18 @@ export default {
 					payload: res.group[0].goods_list
 				});
       }
+      yield put({
+        type: 'saveFullDiscount',
+        payload: res.full_discount
+      });
+      yield put({
+        type: 'saveStoreBusiness',
+        payload: res.s_business
+      });
+      yield put({
+        type: 'saveStoreRecommend',
+        payload: res.storeRecommend
+      });
       yield put({
         type: 'saveGroup',
         payload: res.group
@@ -44,6 +59,24 @@ export default {
       return {
         ...state,
         group: action.payload,
+      };
+    },
+    saveFullDiscount(state, action) {
+      return {
+        ...state,
+        fullDiscount: action.payload,
+      };
+    },
+    saveStoreBusiness(state, action) {
+      return {
+        ...state,
+        s_business: action.payload,
+      };
+    },
+    saveStoreRecommend(state, action) {
+      return {
+        ...state,
+        storeRecommend: action.payload,
       };
     }
   }

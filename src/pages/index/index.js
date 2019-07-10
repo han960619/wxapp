@@ -4,12 +4,10 @@ import { connect } from '@tarojs/redux'
 import { AtIcon } from 'taro-ui'
 import classnames from 'classnames'
 
-import { themeBtnShadowColors } from '../../config'
+import { themeBtnShadowColors, warningDistance } from '../../config'
 import Modal from '../../components/modal'
 import CouponModal from '../../components/coupon-modal'
 import Loading from '../../components/Loading'
-
-
 import './index.less'
 
 
@@ -128,10 +126,46 @@ class Index extends Component {
 
   toChoosePage = (present) => {
     if (!this.props.userInfo.userInfo) return
-    const url = present ? '/pages/choose-shop/index?type=' + present : '/pages/choose-shop/index'
-    Taro.navigateTo({
-      url
-    })
+    if(this.state.store_id) {
+      const { s_address_lat = 0, s_address_lng = 0, store_id } = this.state
+      const { latitude = 0, longitude = 0 } = this.props.localInfo
+      let distance = this.GetDistance(latitude, longitude, s_address_lat, s_address_lng)
+      if(distance * 1000 > warningDistance) {
+        Taro.showModal({
+          title: '提示',
+          content: `我这好像离你有点儿远，还继续点吗(${distance}km)`
+        }).then(({confirm}) => {
+          if (!confirm) return
+          Taro.navigateTo({
+            url: (present ? '/pages/present-good/index?id=' : '/pages/shop-index/index?id=') + store_id
+          })
+        })
+      }else {
+        Taro.navigateTo({
+          url: (present ? '/pages/present-good/index?id=' : '/pages/shop-index/index?id=') + store_id
+        })
+      }
+    }else {
+      const url = present ? '/pages/choose-shop/index?type=' + present : '/pages/choose-shop/index'
+      Taro.navigateTo({
+        url
+      })
+    }
+  }
+
+
+
+  
+  GetDistance = ( lat1,  lng1,  lat2,  lng2) => {
+    let radLat1 = lat1*Math.PI / 180.0;
+    let radLat2 = lat2*Math.PI / 180.0;
+    let a = radLat1 - radLat2;
+    let b = lng1*Math.PI / 180.0 - lng2*Math.PI / 180.0;
+    let s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a/2),2) +
+    Math.cos(radLat1)*Math.cos(radLat2)*Math.pow(Math.sin(b/2),2)));
+    s = s *6378.137 ;// EARTH_RADIUS;
+    s = Math.round(s * 10000) / 10000;
+    return s;
   }
 
   toNoticePage = () => {

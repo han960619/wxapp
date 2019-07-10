@@ -58,7 +58,7 @@ class PresentGood extends Component {
 
   toStandardDetail = (good) => {
     Taro.navigateTo({
-      url: `/pages/standard-detail/index?store_id=${this.$router.params.id}&id=${good.g_id}&name=${good.g_title}&fs_id=${this.state.fs_id}`
+      url: `/pages/standard-detail/index?store_id=${this.$router.params.id}&id=${good.g_id}&name=${good.g_title}&fs_id=${this.state.fs_id}&g_price=${good.g_price}&g_original_price=${good.g_original_price}&g_limit_num=${good.g_limit_num}`
     })
   }
 
@@ -189,7 +189,6 @@ class PresentGood extends Component {
       })
       return
     }
-
     const {fs_id} = this.state
     const gd = {
       ...good,
@@ -233,14 +232,30 @@ class PresentGood extends Component {
       }
     }
 
+    
 
-    const good = {
+    let good = {
       ...curGood,
       ...curCart,
       ...normInfo,
       g_price: 0,
       fs_id
     }
+
+
+    let _total = 0
+    if (!good.optionalnumstr) {
+      let price = good.g_price * good.num
+      good.optional && (price +=
+        good.optional.reduce((t, item, i) => {
+          return t += +item.list[good.optionalTagIndex[i]].gn_price * good.num
+        }, 0))
+      good.num && (_total += +price)
+    } else {
+      _total += (good.total_price * good.num)
+    }
+
+    good._total = _total || 0
 
     this.props.dispatch({
       type: 'cart/setCart',
@@ -261,7 +276,7 @@ class PresentGood extends Component {
     const {goods, curGood, isShowOptions, isShowDetail, stanInfo, curCart,
       propertyTagIndex, optionalTagIndex, isShowCart} = this.state
     const carts = (this.props.carts[(this.$router.params.id)] || []).filter(item => item.fs_id)
-
+    console.log(carts)
     return (
       goods.length > 0 ?
         <View className='present-good'>
@@ -524,7 +539,7 @@ class PresentGood extends Component {
                           </View>
                         </View>
                         <View class='item-center'>
-                          <Text className={'theme-c-' + theme}>&yen;
+                          <Text className={'theme-c-' + theme}><Text class="yen">&yen;</Text>
                             <Text className='font-xin-normal'>
                               {
                                 (+good.g_price
@@ -540,7 +555,7 @@ class PresentGood extends Component {
                           </Text>
                           {
                             good.g_original_price && good.g_original_price * 1 !== 0 &&
-                            <Text className='pre-price'>&yen;{good.g_original_price}</Text>
+                            <Text className='pre-price'><Text class="yen">&yen;</Text>{good.g_original_price}</Text>
                           }
                         </View>
 
@@ -608,6 +623,7 @@ class PresentGood extends Component {
             theme={theme} carts={carts} storeId={+this.$router.params.id}
             themeInfo={menu_cart}
             onOpenCart={this.ToggleShowCart}
+            isShowCart={isShowCart}
           />
 
           <Button className={classnames('more', 'theme-c-' + theme,)} onClick={this.toShopIndex}>选购更多</Button>

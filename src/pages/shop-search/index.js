@@ -1,5 +1,5 @@
 import Taro, {Component} from '@tarojs/taro'
-import {View, Text, Image, Swiper, SwiperItem, ScrollView, Block} from '@tarojs/components'
+import {View, Text, Image, ScrollView, Block} from '@tarojs/components'
 import { AtIcon, AtInput } from 'taro-ui'
 import {connect} from '@tarojs/redux'
 import classnames from 'classnames'
@@ -14,7 +14,8 @@ import noListPng from '../../assets/images/noList.png'
 class ShopSearch extends Component {
 
   config = {
-    navigationBarTitleText: '商品搜索',
+    navigationBarTitleText: '',
+    
   }
 
   state = {
@@ -28,17 +29,42 @@ class ShopSearch extends Component {
 		optionalTagIndex: [],
 		stanInfo: {},
     isShowOptions: false,
-    keyword: ''
+    keyword: '',
+    search: true,
+    recommendIndex: 0
   }
 
   componentWillMount() {
-    const { group } = this.props
-    let goodsList = []
-    group.map((item) => {
-      goodsList = goodsList.concat(item.goods_list)
+    const { search, type, recommendIndex } = this.$router.params
+    const { storeRecommend } = this.props
+    let title = '', backgroundColor = '';
+    if(search) {
+      const { group } = this.props
+      title = '商品搜索'
+      backgroundColor = '#f5f5f5'
+      let goodsList = []
+      group.map((item) => {
+        goodsList = goodsList.concat(item.goods_list)
+      })
+      this.setState({
+        goodsList: [...goodsList],
+        search: true
+      })
+    }else {
+      title = '活动专题'
+      backgroundColor = '#fafafa'
+      this.setState({
+        search: false,
+        recommendIndex,
+        filterList: storeRecommend.goodsList[type - 1]
+      })
+    }
+    Taro.setNavigationBarTitle({
+      title
     })
-    this.setState({
-      goodsList: [...goodsList],
+    Taro.setNavigationBarColor({
+      frontColor: '#000000',
+      backgroundColor
     })
   }
 
@@ -61,7 +87,6 @@ class ShopSearch extends Component {
   showDetail = (good) => {
     const carts = this.props.carts[(+this.$router.params.id)] || []
     const curCart = JSON.parse(JSON.stringify(carts.find(item => item.g_id === good.g_id) || {}))
-
 
     this.setState({
       isShowDetail: true,
@@ -237,7 +262,7 @@ class ShopSearch extends Component {
   toStandardDetail = (good) => {
     this.setState({isShowDetail: false})
     Taro.navigateTo({
-      url: `/pages/standard-detail/index?store_id=${this.$router.params.id}&id=${good.g_id}&name=${good.g_title}&g_price=${good.g_price}`
+      url: `/pages/standard-detail/index?store_id=${this.$router.params.id}&id=${good.g_id}&name=${good.g_title}&g_price=${good.g_price}&g_original_price=${good.g_original_price}&g_limit_num=${good.g_limit_num}`
     })
   }
 
@@ -278,36 +303,46 @@ class ShopSearch extends Component {
 
 
   render() {
-		const { theme, menu_cart } = this.props
+		const { theme, menu_cart, storeRecommend } = this.props
     const {id, fs_id} = this.$router.params
     const carts = (this.props.carts[+id] || []).filter(item => !item.fs_id || item.fs_id === +fs_id)
+    let limitText = ['每单', '每天', '每人']
     const {
         filterList, isShowCart,
       isShowDetail, isShowOptions, curGood, curCart, stanInfo, propertyTagIndex,
-      optionalTagIndex
+      optionalTagIndex, search, recommendIndex
     } = this.state
     return (
       <View className='shop-search'>
-				<View className='page-header'>
-					<View className='search-panel'>
-						<AtIcon value='search' className='search-icon' size='18'/>
-						<AtInput
-							focus
-							placeholder='搜索关键词'
-							name='keyword'
-							type='text'
-							placeholderStyle={'transform: translateY(2px)'}
-							clear
-							border={false}
-							value={keyword}
-							onChange={(e) => { this.handleChange(e) }}
-						/>
-					</View>
-					<View className='cancel-panel' onClick={() => { Taro.navigateBack() }}>取消</View>
-				</View>
+				{
+          search && 
+          <View className='page-header'>
+            <View className='search-panel'>
+              <AtIcon value='search' className='search-icon' size='18'/>
+              <AtInput
+                focus
+                placeholder='搜索关键词'
+                name='keyword'
+                type='text'
+                placeholderStyle={'transform: translateY(2px)'}
+                clear
+                border={false}
+                value={keyword}
+                onChange={(e) => { this.handleChange(e) }}
+              />
+            </View>
+            <View className='cancel-panel' onClick={() => { Taro.navigateBack() }}>取消</View>
+          </View>
+        }
+        {
+          !search && 
+          <View className='page-header'>
+            <Image className='header-img' mode="widthFix" src={storeRecommend.recommend.activity[recommendIndex].image}/>
+          </View>
+        }
 				{
 					filterList && 
-					<View className='good-list'>
+					<View className={`good-list ${!search ? 'pt' : ''}`}>
 						{
 							filterList.length == 0 &&
 							<View className='empty'>
@@ -319,17 +354,28 @@ class ShopSearch extends Component {
 							filterList.length > 0 && filterList.map((good, i) => {
 								const cartGood = carts.find(item => !item.fs_id && (item.g_id === good.g_id))
 								return (
-									<View className='good' key={i}>
+									<View className={`good ${good.g_limit != 0 ? 'mb' : ''}`} key={i}>
 										<View className='img-wrap' onClick={this.showDetail.bind(this, good)}>
 											{
 												good.tag_name &&
 												<Text className={classnames('tag')} style={{background: good.tag_color}}>{good.tag_name}</Text>
-											}
+                      }
+                      {
+                        good.g_highlight &&
+                        <View className={`highlight`}>
+                          <View className={`theme-bg-${theme} bg`}></View>
+                          <Text>{good.g_highlight}</Text>
+                        </View>
+                      }
 											<Image src={good.g_image_100 || ''}/>
 										</View>
 										<View className='info'>
 											<View className='name'>
 												<Text onClick={this.showDetail.bind(this, good)}>{good.g_title}</Text>
+                        {
+                          good.g_takeaway == 2 &&
+                          <View className='takeaway'>不外送</View>
+                        }
 											</View>
 											<View
 												className='pre-price' style={{visibility: +good.g_original_price !== 0 ? 'visible' : 'hidden'}}
@@ -366,8 +412,12 @@ class ShopSearch extends Component {
 													<IdButton onClick={this.toStandardDetail.bind(this, good)}
 																	className={'theme-bg-' + theme}
 													>选规格</IdButton>
-												}
+                        }
 											</View>
+                      {
+                        good.g_limit != 0 &&
+                        <Text className='red'>{limitText[good.g_limit - 1]}限购{good.g_limit_num}份</Text>
+                      }
 										</View>
 									</View>
 								)
@@ -424,23 +474,22 @@ class ShopSearch extends Component {
                       </View>
                     </View>
                     <View class='item-center'>
-                      <Text className={'theme-c-' + theme}>&yen;
-                        <Text className='font-xin-normal'>
-                          {
-                            (+good.g_price
-                              + (
-                                good.optional ?
-                                  good.optional.reduce((total, item, i) => {
-                                    return total += +item.list[good.optionalTagIndex[i]].gn_price
-                                  }, 0)
-                                  : 0
-                              )).toFixed(2)
-                          }
+                      <View>
+                        <Text className={'theme-c-' + theme}>&yen;
+                          <Text className='font-xin-normal'>
+                            {
+                              good._total.toFixed(2)
+                            }
+                          </Text>
                         </Text>
-                      </Text>
+                        {
+                          good.g_original_price && (good.g_original_price - 0) !== 0 &&
+                          <Text className='pre-price'>&yen;{good.g_original_price * good.num}</Text>
+                        }
+                      </View>
                       {
-                        good.g_original_price && (good.g_original_price - 0) !== 0 &&
-                        <Text className='pre-price'>&yen;{good.g_original_price}</Text>
+                        good.overNum > 0 && ((good.num - good.overNum) > 0) &&
+                        <View class="over">(包含特价商品{good.num - good.overNum}份)</View>
                       }
                     </View>
 
@@ -486,8 +535,14 @@ class ShopSearch extends Component {
                     </View>
                     <View class='item-center'>
                       <Text className={'theme-c-' + theme}>&yen;
-                        {good.total_price ? good.total_price.toFixed(2) : '0.00'}
+                        {
+                          good._total.toFixed(2)
+                        }
                       </Text>
+                      {
+                        good.g_original_price && (good.g_original_price - 0) !== 0 &&
+                        <Text className='pre-price'>&yen;{good.g_original_price * good.num}</Text>
+                      }
                     </View>
 
                     <Numbox
@@ -662,6 +717,7 @@ class ShopSearch extends Component {
           onPay={this.handlePay}
           onTop={this.handleTop}
           onOpenCart={this.ToggleShowCart}
+          isShowCart={isShowCart}
         />
 			</View>
     )

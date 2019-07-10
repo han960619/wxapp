@@ -270,10 +270,10 @@ class OrderDetail extends Component {
         store_id,
         order_id: o_id
       }
-    }).then(({change, payload}) => {
+    }).then(({change, warnText, payload}) => {
       if (change) {
         Taro.showModal({
-          content: '商品规格属性已变更，是否重新选择？'
+          content: `${warnText}，是否重新选择？`
         }).then(({confirm}) => {
           confirm && this.againOk()
         })
@@ -566,6 +566,13 @@ class OrderDetail extends Component {
                   <View className='other coupon'>
                     <Text>{data.o_coupon_name}</Text>
                     <Text className={classnames('price', 'theme-c-' + theme)}><Text>-&yen; </Text>{data.o_coupon_amount}</Text>
+                  </View>
+                }
+                {
+                  data.o_full_discount_price != '0.00' &&
+                  <View className={`other coupon ${data.o_coupon_name ? 'nb' : ''}`}>
+                    <Text>满减优惠</Text>
+                    <Text className={classnames('price', 'theme-c-' + theme)}><Text>-&yen; </Text>{data.o_full_discount_price}</Text>
                   </View>
                 }
 

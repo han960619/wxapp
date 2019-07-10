@@ -71,7 +71,7 @@ class CouponModal extends Component {
                   </View>
                   <View className='right'>
                     <View className='price'>
-                      <Text>&yen;</Text>
+                      <Text class="yen">&yen;</Text>
                       <Text className='font-xin-bold num'>{item.uc_price}</Text>
                     </View>
                     <Button

@@ -15,9 +15,7 @@ class Copyright extends Component {
         {
           b_bottom_status === 1 &&
           <View className='name'>
-            <Text className='line' />
             <Text>{b_bottom_content}</Text>
-            <Text className='line' />
           </View>
         }
       </View>
