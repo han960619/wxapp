@@ -1,195 +1,52 @@
 import Taro, {Component} from '@tarojs/taro'
 import {View, Text, Image, Swiper, SwiperItem, ScrollView, Block} from '@tarojs/components'
-import {AtToast} from 'taro-ui'
+import { AtIcon, AtInput } from 'taro-ui'
 import {connect} from '@tarojs/redux'
 import classnames from 'classnames'
 import Modal from '../../components/modal'
 import PayBox from '../../components/pay-box'
-// import ConfirmModal from '../../components/confirm-modal'
-import Loading from '../../components/Loading'
 import Numbox from '../../components/num-box'
 import Curtain from '../../components/curtain'
 import './index.less'
 import IdButton from "../../components/id-button/index"
-import BackToHome from '../../components/back-to-home'
-import searchPng from '../../assets/images/shop-search.png'
-import addressPng from '../../assets/images/shop-address.png'
-
-
-@connect(({common, cart}) => ({...common, ...cart}))
-class ShopIndex extends Component {
+import noListPng from '../../assets/images/noList.png'
+@connect(({common, cart, shop}) => ({...common, ...cart, ...shop}))
+class ShopSearch extends Component {
 
   config = {
-    navigationBarTitleText: '商品列表',
-    disableScroll: true
+    navigationBarTitleText: '商品搜索',
   }
 
   state = {
     group: null,
-    curGroupId: '',
-    curGroupGoodId: '',
-    curClassifyIndex: 0,
     isShowCart: false,
-    isGoodNull: false,
-    isShowDetail: false,
+		isShowDetail: false,
+		filterList: null,
+		curCart: {},
+		curGood: {},
+		propertyTagIndex: [],
+		optionalTagIndex: [],
+		stanInfo: {},
     isShowOptions: false,
-    // isShowCartWarn: false,
-    curCart: {},
-    curGood: {},
-    stanInfo: {},
-    propertyTagIndex: [],
-    optionalTagIndex: [],
-    scrollCurGroupId: '',
+    keyword: ''
   }
 
   componentWillMount() {
-
-    Taro.showShareMenu({
-      withShareTicket: true
+    const { group } = this.props
+    let goodsList = []
+    group.map((item) => {
+      goodsList = goodsList.concat(item.goods_list)
     })
-
-    this.setState({isShowCart: !!this.$router.params.showcart})
-    const id = +this.$router.params.id
-
-    !this.$router.params.fs_id &&
-    this.props.carts[id] &&
-    this.props.dispatch({
-      type: 'cart/clearPresentCart',
-      payload: {
-        id
-      }
-    })
-  }
-
-  onShareAppMessage = () => {
-    return {
-      path: `pages/shop-index/index?id=${this.$router.params.id}&isShare=1`
-    }
-  }
-
-  componentDidShow() {
-    this.getGoodsList()
-    const scroll = Taro.getStorageSync('scroll')
-    if(scroll) {
-      this.handleTop()
-      Taro.removeStorage({ key: 'scroll' })
-    }
-  }
-
-  getGoodsList = () => {
-    const { latitude, longitude } = this.props.localInfo
-    this.props.dispatch({
-      type: 'shop/getGoodsList',
-      payload: {
-        store_id: +this.$router.params.id,
-        address_lat: latitude,
-        address_lng: longitude
-      }
-    }).then(({group, storeinfo}) => {
-      if(group == undefined) {
-        setTimeout(() => {
-          Taro.navigateBack()
-        }, 2500)
-        return false
-      }
-      if (!group || group.length === 0) {
-        Taro.showToast({
-          title: '当前店铺尚未上架任何商品!',
-          icon: 'none'
-        })
-
-        setTimeout(() => {
-          Taro.navigateBack()
-        }, 2500)
-
-        return
-      }
-
-      this.setState({
-        group,
-        storeinfo
-      }, this.calcAsideSize)
-
-      this.goodPosition = []
-      for (let i = 0; i < group.length; i++) {
-        let height = 34 + 96 * group[i].goods_list.length
-        let top = i === 0 ? 0 : this.goodPosition[i - 1].bottom
-        this.goodPosition.push({
-          group_id: group[i].group_id,
-          index: i,
-          top,
-          bottom: top + height
-        })
-      }
-    })
-  }
-
-  /**
-   * 计算左侧总高度和单个项高度
-   * */
-  calcAsideSize = () => {
-    const {group} = this.state
-
-    if (group.length === 0) return
-
-    if (!this.asideHeiInfo) {
-      this.asideHeiInfo = {}
-      let query = Taro.createSelectorQuery()
-      query.select('#aside-scroll').boundingClientRect()
-        .exec(res => {
-          this.asideHeiInfo.wrapHeight = res[0].height
-        })
-
-      query.select('#asid-' + group[0].group_id).boundingClientRect()
-        .exec(res => {
-          this.asideHeiInfo.itemHeight = res[1].height
-        })
-    }
-  }
-
-  changeClassify = (index, scrollGood = true) => {
-    // if(this.state.curClassifyIndex == index) return
-    const {group} = this.state
-
-    const {wrapHeight, itemHeight} = this.asideHeiInfo
-    const asideScrollTop = this.asideScrollTop || 0
-    const itemNums = Math.ceil(wrapHeight / itemHeight)
-    let curGroupId
-    if (index === 0) {
-      curGroupId = 'asid-' + group[0].group_id
-    } else if ((index - 1) * itemHeight <= asideScrollTop) {
-      curGroupId = 'asid-' + group[index - 1].group_id
-    } else if ((index + 2) * itemHeight > (asideScrollTop + wrapHeight) && index > itemNums - 3) {
-      curGroupId = 'asid-' + group[index - itemNums + 3].group_id
-    }
     this.setState({
-      curClassifyIndex: index,
-      curGroupId,
+      goodsList: [...goodsList],
     })
-    if (scrollGood) {
-      this.setState({
-        curGroupGoodId: 'id' + this.state.group[index].group_id,
-        scrollCurGroupId: null
-      })
-      this.curGroupGoodId = this.state.group[index].group_id
-    }
   }
 
-  goodScroll = e => {
-    const fix = e.detail.scrollHeight / (this.goodPosition[this.goodPosition.length - 1].bottom + 96)
-    if (e.detail.scrollTop + this.asideHeiInfo.wrapHeight > e.detail.scrollHeight) return
-    this.goodPosition.map(item => {
-      if (e.detail.scrollTop >= Math.floor(item.top * fix) && e.detail.scrollTop < Math.floor(item.bottom  * fix)) {
-        if (this.curGroupGoodId !== this.state.group[item.index].group_id) {
-          this.setState({
-            scrollCurGroupId: item.group_id,
-            curGroupGoodId: null
-          })
-        } else{
-          this.curGroupGoodId = null
-        }
-        this.changeClassify(item.index, false)
-      }
+  filterGoods = () => {
+    const { keyword, goodsList } = this.state
+    let filterList = goodsList.filter(item => item.g_title.includes(keyword))
+    this.setState({
+			filterList
     })
   }
 
@@ -258,6 +115,13 @@ class ShopIndex extends Component {
     this.setState({
       isShowOptions: false,
       stanInfo: {}
+    })
+  }
+  
+  handleTop = () => {
+    Taro.setStorage({ key: 'scroll', data: true })
+    .then(() => {
+      Taro.navigateBack()
     })
   }
 
@@ -355,7 +219,6 @@ class ShopIndex extends Component {
     })
   }
 
-
   clearCart = () => {
     this.props.dispatch({
       type: 'cart/clearOneCart',
@@ -382,14 +245,6 @@ class ShopIndex extends Component {
     e.stopPropagation()
   }
 
-  asideScroll = e => {
-    this.asideScrollTop = e.detail.scrollTop
-  }
-
-  handleTop = () => {
-    this.changeClassify(0, true)
-  }
-
   handlePay = () => {
     this.setState({
       isShowOptions: false,
@@ -403,206 +258,125 @@ class ShopIndex extends Component {
     }).then(({confirm}) => {
       confirm && this.clearCart()
     })
-  }
+	}
+	
+	handleChange = value => {
+		let keyword = value.trim()
+    if(keyword && keyword != '') {
+      this.setState({
+				keyword
+			}, () => {
+				this.filterGoods()
+			})
+    }else {
+      this.setState({
+        filterList: null,
+        keyword: ''
+      })
+    }
+	}
 
-  linkToSearch = () => {
-    Taro.navigateTo({
-      url: `/pages/shop-search/index?id=${this.$router.params.id}`
-    })
-  }
-
-  lookAddress = () => {
-    const { storeinfo } = this.state
-    Taro.openLocation({
-      latitude: +storeinfo.address_lat,
-      longitude: +storeinfo.address_lng,
-      name: storeinfo.s_title,
-      scale: 18
-    })
-  }
 
   render() {
-    const {theme, menu_banner, menu_cart} = this.props
+		const { theme, menu_cart } = this.props
     const {id, fs_id} = this.$router.params
     const carts = (this.props.carts[+id] || []).filter(item => !item.fs_id || item.fs_id === +fs_id)
-
     const {
-      group, curClassifyIndex, isShowCart, isGoodNull,
-      isShowDetail, isShowOptions, curGroupId, curGood, curCart,
-      curGroupGoodId, stanInfo, propertyTagIndex,
-      optionalTagIndex, scrollCurGroupId, storeinfo
+        filterList, isShowCart,
+      isShowDetail, isShowOptions, curGood, curCart, stanInfo, propertyTagIndex,
+      optionalTagIndex
     } = this.state
     return (
-      group ?
-      <View className='shop-index'>
-        <View className='banner'>
-          {/* <Swiper
-            indicatorColor='#999'
-            indicatorActiveColor='#f00'
-            previous-margin='12px'
-            next-margin='12px'
-            circular
-            autoplay={menu_banner.auto_play != 0}
-            interval={menu_banner.auto_play == 0 ? 5000 : menu_banner.auto_play * 1000}
-          >
-            {
-              menu_banner.banner.map((img, index) => (
-                <SwiperItem className='swiper-item' key={index}>
-                  <View>
-                    <Image className='swiper-img' src={img.image || ''}/>
-                  </View>
-                </SwiperItem>
-              ))
-            }
+      <View className='shop-search'>
+				<View className='page-header'>
+					<View className='search-panel'>
+						<AtIcon value='search' className='search-icon' size='18'/>
+						<AtInput
+							focus
+							placeholder='搜索关键词'
+							name='keyword'
+							type='text'
+							placeholderStyle={'transform: translateY(2px)'}
+							clear
+							border={false}
+							value={keyword}
+							onChange={(e) => { this.handleChange(e) }}
+						/>
+					</View>
+					<View className='cancel-panel' onClick={() => { Taro.navigateBack() }}>取消</View>
+				</View>
+				{
+					filterList && 
+					<View className='good-list'>
+						{
+							filterList.length == 0 &&
+							<View className='empty'>
+								<Image className='empty-img' mode="widthFix" src={noListPng}/>
+								<View className='empty-tip'>——  找不到啦  ——</View>
+							</View>
+						}
+						{
+							filterList.length > 0 && filterList.map((good, i) => {
+								const cartGood = carts.find(item => !item.fs_id && (item.g_id === good.g_id))
+								return (
+									<View className='good' key={i}>
+										<View className='img-wrap' onClick={this.showDetail.bind(this, good)}>
+											{
+												good.tag_name &&
+												<Text className={classnames('tag')} style={{background: good.tag_color}}>{good.tag_name}</Text>
+											}
+											<Image src={good.g_image_100 || ''}/>
+										</View>
+										<View className='info'>
+											<View className='name'>
+												<Text onClick={this.showDetail.bind(this, good)}>{good.g_title}</Text>
+											</View>
+											<View
+												className='pre-price' style={{visibility: +good.g_original_price !== 0 ? 'visible' : 'hidden'}}
+											>
+												&yen;{good.g_original_price}
+											</View>
+											<View className='price'><Text>&yen;</Text>
+												<Text className='font-xin-normal'>{good.g_price}</Text>
+											</View>
+											<View className='handle' onClick={this.stopPropagation}>
+												{
+													good.g_combination === 1 &&
+													<Block>
+														{
+															good.g_has_norm === 2 &&
+															<Numbox
+																num={cartGood.num}
+																showNum={cartGood && cartGood.num !== 0}
+																onReduce={this.this.setCart.bind(this, good, -1, cartGood)}
+																onAdd={this.setCart.bind(this, good, 1)}
+															/>
+														}
+														{
+															good.g_has_norm === 1 &&
+															<IdButton onClick={this.openOptions.bind(this, good)}
+																			className={'theme-bg-' + theme}
+															>选规格</IdButton>
+														}
+													</Block>
+												}
 
-          </Swiper> */}
-
-          <View className='shop-content'>
-            <Image className='shop-img' src={storeinfo.s_image || ''}/>
-            <View className='shop-detail'>
-              <View className='shop-name'>{storeinfo.s_title}</View>
-              <View className='shop-address'>{storeinfo.s_address}</View>
-              <View className='shop-apps'>
-                <View className='app-item' onClick={() => { this.lookAddress()}}>
-                  <Image className='app-img' src={addressPng}/>
-                  <View className='app-name'>距您{storeinfo.distance}</View>
-                </View>
-                <View className='app-item search-panel' onClick={() => { this.linkToSearch()}}>
-                  <Image className='app-img' src={searchPng}/>
-                  <View className='app-name'>搜索商品</View>
-                </View>
-              </View>
-            </View>
-          </View>
-
-        </View>
-
-        {
-          group && group.length &&
-          <View className='menu'>
-            <View className='aside'>
-              <ScrollView
-                scrollWithAnimation
-                scrollY className='item-wrap'
-                onScroll={this.asideScroll} scrollIntoView={curGroupId}
-                id='aside-scroll'>
-                <View className='bg-alias'>
-                  {
-                    group.map((classify, index) => (
-                      <View key={index}/>
-                    ))
-                  }
-                </View>
-                {
-                  group.map((classify, index) => (
-                    <View
-                      className={classnames('item', index === curClassifyIndex ? 'active' : '',
-                        index === curClassifyIndex - 1 ? 'pre-active' : '',
-                        index === curClassifyIndex + 1 ? 'af-active' : '')}
-                      onClick={this.changeClassify.bind(this, index)}
-                      key={index} id={'asid-' + classify.group_id}
-                    >
-                      {
-                        classify.gg_must == 1 && <View className='must-icon'>必点</View>
-                      }
-                      <View>
-                        <Image src={classify.gg_image || ''}/>
-                        <Text>{classify.gg_name}</Text>
-                      </View>
-                    </View>
-                  ))
-                }
-                <View className={classnames('null-block', curClassifyIndex === group.length - 1 ? 'radius' : '')}>
-                  <View />
-                </View>
-              </ScrollView>
-            </View>
-            <ScrollView
-              scrollWithAnimation
-              className='content'
-              scrollY scrollIntoView={curGroupGoodId}
-              onScroll={this.goodScroll}
-            >
-              {
-                group.map((classify, index) => (
-                  <View className='good-block' key={index} id={'id' + classify.group_id}>
-                    <View className='title' id={'title-' + classify.group_id}>
-                      <View className={scrollCurGroupId === classify.group_id ? 'top-show' : ''}
-                        style={{zIndex: 20 + index}}
-                      >
-                        <Image src={classify.gg_image || ''}/>
-                        <Text>{classify.gg_name}</Text>
-                      </View>
-                    </View>
-                    <View className='good-list'>
-                      {
-                        classify.goods_list.map((good, i) => {
-                          const cartGood = carts.find(item => !item.fs_id && (item.g_id === good.g_id))
-                          return (
-                            <View className='good' key={i}>
-                              <View className='img-wrap' onClick={this.showDetail.bind(this, good)}>
-                                {
-                                  good.tag_name &&
-                                  <Text className={classnames('tag')} style={{background: good.tag_color}}>{good.tag_name}</Text>
-                                }
-                                <Image src={good.g_image_100 || ''}/>
-                              </View>
-                              <View className='info'>
-                                <View className='name'>
-                                  <Text onClick={this.showDetail.bind(this, good)}>{good.g_title}</Text>
-                                </View>
-                                <View
-                                  className='pre-price' style={{visibility: +good.g_original_price !== 0 ? 'visible' : 'hidden'}}
-                                >
-                                  &yen;{good.g_original_price}
-                                </View>
-                                <View className='price'><Text>&yen;</Text>
-                                  <Text className='font-xin-normal'>{good.g_price}</Text>
-                                </View>
-                                <View className='handle' onClick={this.stopPropagation}>
-                                  {
-                                    good.g_combination === 1 &&
-                                    <Block>
-                                      {
-                                        good.g_has_norm === 2 &&
-                                        <Numbox
-                                          num={cartGood.num}
-                                          showNum={cartGood && cartGood.num !== 0}
-                                          onReduce={this.this.setCart.bind(this, good, -1, cartGood)}
-                                          onAdd={this.setCart.bind(this, good, 1)}
-                                        />
-                                      }
-                                      {
-                                        good.g_has_norm === 1 &&
-                                        <IdButton onClick={this.openOptions.bind(this, good)}
-                                                className={'theme-bg-' + theme}
-                                        >选规格</IdButton>
-                                      }
-                                    </Block>
-                                  }
-
-                                  {
-                                    good.g_combination === 2 &&
-                                    <IdButton onClick={this.toStandardDetail.bind(this, good)}
-                                            className={'theme-bg-' + theme}
-                                    >选规格</IdButton>
-                                  }
-                                </View>
-                              </View>
-                            </View>
-                          )
-                        })
-                      }
-
-                    </View>
-                  </View>
-                ))
-              }
-            </ScrollView>
-          </View>
-        }
-
-        {
+												{
+													good.g_combination === 2 &&
+													<IdButton onClick={this.toStandardDetail.bind(this, good)}
+																	className={'theme-bg-' + theme}
+													>选规格</IdButton>
+												}
+											</View>
+										</View>
+									</View>
+								)
+							})
+						}
+					</View>
+					
+				}
+				{
           isShowCart && carts.length > 0 &&
           <Text className='mask' onClick={this.closeCart} onTouchMove={this.stopPropagation} />
         }
@@ -889,34 +663,9 @@ class ShopIndex extends Component {
           onTop={this.handleTop}
           onOpenCart={this.ToggleShowCart}
         />
-
-        {/*<ConfirmModal
-          show={isShowCartWarn}
-          className='clear-cart-modal'
-          theme={theme}
-          title=''
-          onCancel={this.showOrHideCartWarn.bind(this, false)}
-          onOk={this.clearCart}
-        >
-          清空购物车?
-        </ConfirmModal>*/}
-
-        <AtToast
-          className='null-toast'
-          isOpened={isGoodNull} hasMask
-          text='部分原商品已下架，请重新挑选'/>
-
-        {
-          this.$router.params.isShare === '1' &&
-          <BackToHome />
-        }
-
-      </View>
-
-      :
-      <Loading />
+			</View>
     )
   }
 }
 
-export default ShopIndex
+export default ShopSearch

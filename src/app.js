@@ -14,6 +14,7 @@ class App extends Component {
       'pages/index/index',
       'pages/choose-shop/index',
       'pages/shop-index/index',
+      'pages/shop-search/index',
       'pages/standard-detail/index',
       'pages/notice/index',
       'pages/coupon/index',
@@ -62,7 +63,6 @@ class App extends Component {
   init = async () => {
 
     const conf = Taro.getExtConfigSync()
-
     if (!conf.domain) {
       Taro.showToast({
         title: '获取ext配置失败',

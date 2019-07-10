@@ -414,7 +414,7 @@ class Choose extends Component {
                           <Text className={classnames('distance', theme_c)}>
                             {(item.distance / 1000).toFixed(2)}KM</Text>
                         </View>
-                        <View className='address'>{item.s_city}{item.s_area}{item.s_address}</View>
+                        <View className='address'>{item.s_city != '市辖区' ? item.s_city : ''}{item.s_area}{item.s_address}</View>
                         {
                           selectedStoreIndex === index &&
 

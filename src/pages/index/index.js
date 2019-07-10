@@ -52,9 +52,23 @@ class Index extends Component {
     }
   }
 
-  componentWillUnmount () { }
+  componentWillMount () {
+    const { id } = wx.getLaunchOptionsSync().query
+    if(id) {
+      let time = setInterval(() => {
+        const { latitude, longitude } = this.props.localInfo
+        if(latitude && longitude) {
+          clearTimeout(time)
+          Taro.navigateTo({
+            url: `/pages/shop-index/index?id=${id}`
+          })
+        }
+      }, 500)
+    }
+  }
 
   componentDidShow () {
+    const { localInfo } = this.props
     this.getIndexInfo();
 
     this.props.localInfo.error === 1 && this.props.localInfo.err.errCode == 0
@@ -159,7 +173,7 @@ class Index extends Component {
       type: 'common/setUserInfo',
       payload: res.detail
     })
-    const { encryptedData, iv } = res.detail
+    const { encryptedData = '', iv = '' } = res.detail
 
     this.props.dispatch({
       type: 'common/postUserInfo',
