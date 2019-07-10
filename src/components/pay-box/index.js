@@ -129,7 +129,7 @@ class PayBox extends Component {
   }
 
   render () {
-    let {theme, carts, onOpenCart, themeInfo, simple, totalPrice, btnText, active, isShowCart} = this.props
+    let {theme, carts, onOpenCart, themeInfo, simple, totalPrice, btnText, active, isShowCart, s_business} = this.props
     const {isAlert} = this.state
     let cartsWarn = this.filterShowWarn()
     let { warnText, discount } = this.filterWarnText()
@@ -151,6 +151,7 @@ class PayBox extends Component {
       return total += good._total
     }, 0)).toFixed(2)
     return (
+      s_business == 1 ?
       <View className={`pay-content ${(carts.length > 0 || active) ? 'active' : ''}`}>
         <View className={classnames('pay-box', (carts.length > 0 || active) ? 'active' : '', simple ? 'simple' : '')}>
           <View className='info' onClick={onOpenCart}>
@@ -200,6 +201,14 @@ class PayBox extends Component {
           }
         </View>
       </View>
+      :  <View className='pay-content active'>
+          <View className='pay-box active'>
+            <View className='close-store'>
+              <Image src={themeInfo.image} />
+              <View className='close-desc'>本店休息中，下次再来吧~</View>
+            </View>
+          </View>
+        </View>
     )
   }
 }
